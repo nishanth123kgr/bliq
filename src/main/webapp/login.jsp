@@ -9,6 +9,7 @@
   <script src="js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="css/register.css" />
   <link rel="stylesheet" href="css/fontawesome.css" />
+  <link rel="icon" href="assets/logo/favicon.ico" type="image/x-icon">
 </head>
 <body class="d-flex content-center items-center m-0 p-0 overflow-hidden">
 <div class="main d-flex position-fixed">
@@ -83,7 +84,7 @@
       </div> -->
           <button class="submit bg-light">LOGIN</button>
           <div class="mt-3 login-text text-white position-relative text-center">
-            Don't have an account? <a href="register.html" class="text-white fw-bolder">Sign Up</a>
+            Don't have an account? <a href="register.jsp" class="text-white fw-bolder">Sign Up</a>
           </div>
         </div>
       </div>
@@ -141,7 +142,7 @@
       >
         <span class="sign-up-text fs-1">LOGIN</span>
         <div class="login-text">
-          Don't have an account? <a href="register.html">Sign Up</a>
+          Don't have an account? <a href="register.jsp">Sign Up</a>
         </div>
       </div>
       <div
@@ -183,6 +184,29 @@
     </div>
   </div>
 </div>
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <!-- Custom toast goes here -->
+  <div class="toast" id="error-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Admin</strong>
+      <small class="text-body-secondary">just now</small>
+    </div>
+    <div class="toast-body">
+      Incorrect email or password. Please try again.
+    </div>
+  </div>
+
+  <div class="toast" id="success-toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Admin</strong>
+      <small class="text-body-secondary">just now</small>
+    </div>
+    <div class="toast-body">
+        Login successful. Redirecting to dashboard...
+    </div>
+  </div>
+</div>
+
 <script src="js/login.js" type="module"></script>
 </body>
 </html>

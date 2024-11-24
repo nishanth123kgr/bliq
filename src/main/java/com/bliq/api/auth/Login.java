@@ -1,12 +1,13 @@
 package com.bliq.api.auth;
 
 import com.bliq.services.UserService;
+import com.bliq.services.SessionService;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.*;
 
 import jakarta.persistence.*;
 
-import com.bliq.models.Users;
+import com.bliq.models.*;
 import com.bliq.Utils;
 import com.bliq.api.UserResponse;
 
@@ -20,7 +21,8 @@ public class Login {
     @Produces("text/json")
     public UserResponse signup(
             @FormParam("email") String mail,
-            @FormParam("password") String paswd
+            @FormParam("password") String paswd,
+            @FormParam("device") String device
     ) {
         try{
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
@@ -39,6 +41,19 @@ public class Login {
             if (!utils.checkPassword(paswd, user_details[0])) {
                 return new UserResponse("Incorrect password", "error");
             }
+
+            // Create session
+            SessionService sessionService = new SessionService(em);
+            int user_id = Integer.parseInt(user_details[2]);
+            String sessionToken = utils.generateSessionToken();
+            String[] session_details = sessionService.createSession(user_id, sessionToken, device, true);
+
+
+            if (Objects.equals(session_details[1], "error")) {
+                return new UserResponse(session_details[0], "error");
+            }
+
+
 
             // Return success message as json
             return new UserResponse("Login Success", "success");

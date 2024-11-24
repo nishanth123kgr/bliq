@@ -9,6 +9,7 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="css/register.css" />
     <link rel="stylesheet" href="css/fontawesome.css" />
+    <link rel="icon" href="assets/logo/favicon.ico" type="image/x-icon">
 </head>
 <body class="d-flex content-center items-center m-0 p-0 overflow-hidden">
 <div class="main d-flex position-fixed">
@@ -206,6 +207,30 @@
         </div>
     </div>
 </div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <!-- Custom toast goes here -->
+    <div class="toast" id="error-toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Admin</strong>
+            <small class="text-body-secondary">just now</small>
+        </div>
+        <div class="toast-body">
+            Invalid email or password. Please try again.
+        </div>
+    </div>
+
+    <div class="toast" id="success-toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Admin</strong>
+            <small class="text-body-secondary">just now</small>
+        </div>
+        <div class="toast-body">
+            Sign Up successful. Redirecting to Login...
+        </div>
+    </div>
+</div>
+
 <script src="js/register.js" type="module"></script>
 </body>
 </html>

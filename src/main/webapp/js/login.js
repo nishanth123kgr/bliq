@@ -1,8 +1,17 @@
-import { toggle } from './utils.js';
+import {toggle} from './utils.js';
+import './bootstrap.bundle.min.js';
 
 toggle();
 
+function hideAllToasts() {
+    document.querySelectorAll('.toast').forEach(toast => {
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+        toastBootstrap.hide();
+    });
+}
+
 document.querySelectorAll('.submit').forEach(submitButton => {
+    hideAllToasts();
     submitButton.addEventListener('click', (event) => {
         const form = submitButton.parentElement;
         console.log(form)
@@ -12,7 +21,7 @@ document.querySelectorAll('.submit').forEach(submitButton => {
 
         const urlEncodedData = new URLSearchParams();
         form.querySelectorAll('.form-control').forEach(input => {
-            if(input.name === 'email' && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input.value)) {
+            if (input.name === 'email' && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input.value)) {
                 alert('Invalid email');
 
                 return
@@ -25,10 +34,11 @@ document.querySelectorAll('.submit').forEach(submitButton => {
             }
 
         })
-        if(!valid){
+        if (!valid) {
             return;
         }
 
+        urlEncodedData.append('device', navigator.userAgent);
 
 
         fetch('/api/login', {
@@ -38,12 +48,24 @@ document.querySelectorAll('.submit').forEach(submitButton => {
                 'Content-Type': 'application/x-www-form-urlencoded', // Specify form data type
             }
         }).then(response => response.json().then(data => {
-                if(data.status === 'success') {
-                    window.location.href = '/index.jsp';
+                if (data.status === 'success') {
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('success-toast'));
+                    toastBootstrap.show();
+                    setTimeout(() => {
+                            window.location.href = '/index.jsp';
+                        }
+                        , 1000);
+
+
                 } else {
-                    alert(data.message);
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('error-toast'));
+                    toastBootstrap.show();
                 }
             })
         );
     });
 })
+
+
+
+

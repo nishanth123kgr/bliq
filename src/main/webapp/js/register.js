@@ -154,11 +154,19 @@ document.querySelectorAll('.submit').forEach(submitButton => {
                 'Content-Type': 'application/x-www-form-urlencoded', // Specify form data type
             }
         }).then(response => response.json().then(data => {
-            if(data.status === 'success') {
-                window.location.href = '/login.jsp';
-            } else {
-                alert(data.message);
-            }
+                if (data.status === 'success') {
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('success-toast'));
+                    toastBootstrap.show();
+                    setTimeout(() => {
+                            window.location.href = '/login.jsp';
+                        }
+                        , 1000);
+
+
+                } else {
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('error-toast'));
+                    toastBootstrap.show();
+                }
             })
         );
     });

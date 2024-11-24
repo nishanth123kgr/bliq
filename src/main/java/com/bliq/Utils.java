@@ -2,6 +2,7 @@ package com.bliq;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 public class Utils {
     public String hashPassword(String password) {
@@ -30,6 +31,10 @@ public class Utils {
 
     public boolean checkPassword(String password, String hash) {
         return hashPassword(password).equals(hash);
+    }
+
+    public String generateSessionToken() {
+        return UUID.randomUUID().toString();
     }
 
 }

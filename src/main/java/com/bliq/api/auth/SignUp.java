@@ -5,9 +5,9 @@ import jakarta.ws.rs.core.MediaType;
 
 import jakarta.persistence.*;
 
-import com.bliq.models.Users;
 import com.bliq.Utils;
 import com.bliq.api.UserResponse;
+import com.bliq.services.UserService;
 
 
 
@@ -25,7 +25,7 @@ public class SignUp {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
             EntityManager em = emf.createEntityManager();
 
-            Users user = new Users();
+            /*Users user = new Users();
             user.setMail(mail);
             user.setName(name);
 
@@ -33,8 +33,13 @@ public class SignUp {
             user.setPaswdHash(utils.hashPassword(paswd));
             em.getTransaction().begin();
             em.persist(user);
-            em.getTransaction().commit();
+            em.getTransaction().commit();*/
 
+            UserService userService = new UserService(em);
+            String[] resp = userService.createUser(name, mail, new Utils().hashPassword(paswd));
+            if(resp[1].equals("error")){
+                return new UserResponse(resp[0], "error");
+            }
             // Return success message as json
             return new UserResponse("User created successfully", "success");
         } catch (Exception e) {
