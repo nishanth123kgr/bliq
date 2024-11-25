@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 170" style="background-color: #5468ff;position: relative;">
+<!--Triangle-->
+  <defs>
+<!--Filter for box shadow-->
+    <defs>
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="rgba(31, 38, 135, 0.37)" />
+    </filter>
+  </defs>
+  </defs>
+  <circle cx="110" cy="60" r="52" fill="transparent" stroke="rgba(255, 255, 255, 0.18)" stroke-width="1" filter="url(#dropShadow)"/>
+  <polygon points="0,120 120,0 0,0" fill="#dff5ff" transform="translate(10, 160) rotate(-90)"/>
+</svg>

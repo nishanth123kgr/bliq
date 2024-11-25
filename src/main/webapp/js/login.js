@@ -49,13 +49,13 @@ document.querySelectorAll('.submit').forEach(submitButton => {
             }
         }).then(response => response.json().then(data => {
                 if (data.status === 'success') {
+                    document.cookie = `token=${data.payload}; path=/`;
                     const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('success-toast'));
                     toastBootstrap.show();
-                    setTimeout(() => {
-                            window.location.href = '/index.jsp';
-                        }
-                        , 1000);
 
+                    setTimeout(() => {
+                        window.location.href = '/index.jsp';
+                    }, 1000);
 
                 } else {
                     const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('error-toast'));

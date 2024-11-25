@@ -56,7 +56,7 @@ public class Login {
 
 
             // Return success message as json
-            return new UserResponse("Login Success", "success");
+            return new UserResponse("Login Success", "success", sessionToken);
         } catch (Exception e) {
             return new UserResponse("Login failed\n\n"+ e, "error");
 

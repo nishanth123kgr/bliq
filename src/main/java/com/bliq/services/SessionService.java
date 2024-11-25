@@ -53,4 +53,40 @@ public class SessionService {
             return new String[]{"Session creation failed\n\n"+ e, "error"};
         }
     }
+
+    public String[] checkSessionExists(String sessionToken) {
+        String sessionExists = null;
+        int userId = 0;
+
+        try {
+            // Create the stored procedure query
+            StoredProcedureQuery query = em.createStoredProcedureQuery("CheckSessionExists");
+
+            // Register input and output parameters
+            query.registerStoredProcedureParameter("p_session_token", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("p_user_id", Integer.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("p_session_exists", Boolean.class, ParameterMode.OUT);
+
+            // Set the input parameter
+            query.setParameter("p_session_token", sessionToken);
+
+            // Execute the query
+            query.execute();
+
+            // Retrieve the output parameters
+            userId = (Integer) query.getOutputParameterValue("p_user_id");
+
+            if(!(Boolean) query.getOutputParameterValue("p_session_exists")){
+                sessionExists = "false";
+            } else {
+                sessionExists = "true";
+            }
+
+            return new String[]{sessionExists, Integer.toString(userId)};
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new String[]{"Session check failed\n\n"+ e, "error"};
+        }
+    }
 }
