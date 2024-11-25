@@ -82,11 +82,11 @@ public class SessionService {
                 sessionExists = "true";
             }
 
-            return new String[]{sessionExists, Integer.toString(userId)};
+
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return new String[]{"Session check failed\n\n"+ e, "error"};
+            System.out.println(e);
         }
+        return new String[]{sessionExists, Integer.toString(userId)};
     }
 }
