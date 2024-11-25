@@ -1,5 +1,6 @@
 package com.bliq.filters;
 
+import com.bliq.services.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -13,6 +14,8 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.Arrays;
+
+import jakarta.servlet.http.HttpSession;
 
 import com.bliq.services.SessionService;
 
@@ -30,6 +33,8 @@ public class IsAuthenticated implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        HttpSession session = httpRequest.getSession();
 
         boolean hasSessionToken = false;
         String sessionToken = null;
@@ -63,13 +68,23 @@ public class IsAuthenticated implements Filter {
                 return;
             }
 
-            request.setAttribute("userId", sessionDetails[1]);
-            request.setAttribute("sessionToken", sessionToken);
+            session.setAttribute("userId", sessionDetails[1]);
+            session.setAttribute("sessionToken", sessionToken);
 
 
             System.out.println("IsAuthenticated: doFilter: userId: " + sessionDetails[1]);
             System.out.println("IsAuthenticated: doFilter: sessionToken: " + sessionToken);
 
+            UserService userService = new UserService(em);
+            String[] userDetails = userService.getUserDetails(Integer.parseInt(sessionDetails[1]));
+
+            session.setAttribute("name", userDetails[0]);
+            session.setAttribute("email", userDetails[1]);
+
+            System.out.println("IsAuthenticated: doFilter: name: " + userDetails[0]);
+            System.out.println("IsAuthenticated: doFilter: email: " + userDetails[1]);
+
+            // Allow the request to pass through
             if(httpRequest.getRequestURI().equals("/login.jsp") || httpRequest.getRequestURI().equals("/register.jsp")){
                 httpResponse.sendRedirect("/index.jsp");
                 return;

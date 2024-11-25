@@ -67,5 +67,38 @@ public class UserService {
 
         return new String[]{passwdHash, userExists, String.valueOf(userId)};
     }
+
+    public String[] getUserDetails(int user_id){
+
+        try {
+            // Create the stored procedure query
+            StoredProcedureQuery query = em.createStoredProcedureQuery("GetUserDetails");
+
+            // Register input and output parameters
+            query.registerStoredProcedureParameter("p_user_id", Integer.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("p_name", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("p_mail", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("p_status", Integer.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("p_is_admin", Boolean.class, ParameterMode.OUT);
+
+            // Set the input parameter
+            query.setParameter("p_user_id", user_id);
+
+            // Execute the query
+            query.execute();
+
+            // Retrieve the output parameters
+            String name = (String) query.getOutputParameterValue("p_name");
+            String mail = (String) query.getOutputParameterValue("p_mail");
+            int status = (Integer) query.getOutputParameterValue("p_status");
+            boolean isAdmin = (Boolean) query.getOutputParameterValue("p_is_admin");
+
+            return new String[]{name, mail, String.valueOf(status), String.valueOf(isAdmin)};
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new String[]{"User does not exist", "error"};
+    }
 }
 
