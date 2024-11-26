@@ -202,13 +202,14 @@ function add_chat_in_sidebar(user) {
     for (let i = 0; i < conv_list.length; i++) {
         if (conv_list[i].getAttribute("data-user-id") == user_id) {
             conv_list[i].click();
-            return;
+            return true;
         }
     }
     convs.insertBefore(user_conv, conv_list[0]);
     console.log(user_conv);
     user_conv.click();
 
+    return false;
 
 }
 
@@ -217,9 +218,11 @@ async function openChat(userDiv) {
     const userId = userDiv.getAttribute("data-user-id");
     console.log("Opening chat with user ID:", userId);
 
-    add_chat_in_sidebar(userDiv);
+    let isAlreadyPresent = add_chat_in_sidebar(userDiv);
 
     // Create a new chat with the user
+
+    if (isAlreadyPresent) return;
 
     let params = new URLSearchParams();
     params.append('user_id', document.body.getAttribute("data-user-id"));
@@ -240,7 +243,7 @@ async function openChat(userDiv) {
 
     console.log("Chat created:", chat);
 
-    
+
 
 
     // Add your code to open a chat with the user
