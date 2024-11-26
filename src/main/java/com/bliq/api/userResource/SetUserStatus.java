@@ -1,5 +1,6 @@
-package com.bliq.api;
+package com.bliq.api.userResource;
 
+import com.bliq.api.UserResponse;
 import com.bliq.services.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
