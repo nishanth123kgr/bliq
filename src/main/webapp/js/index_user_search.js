@@ -249,6 +249,37 @@ async function openChat(userDiv) {
     // Add your code to open a chat with the user
 }
 
+async function fetch_chats(user_id) {
+    let chatContainer = document.getElementById('conv-item');
+    chatContainer.innerHTML = "";
+    let chats = await fetch(`/api/fetch-chats?user_id=${user_id}`);
+    if (!chats.ok) {
+        console.error("Error fetching chats");
+        return;
+    }
+
+    let chat_list = await chats.json();
+    chat_list.forEach(chat => {
+        let chat_div = document.createElement('div');
+        chat_div.classList = 'flex items-center space-x-3 p-2 hover:bg-gray-100 cursor-pointer border-l-4 border-transparent';
+        chat_div.innerHTML = `
+                    <div class="prof h-[18px] w-[18px] rounded-full bg-white border border-primary flex items-center justify-center">
+                        <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[10px] w-[10px]">
+                    </div>
+                    <span class="font-medium">${chat[1]}</span>
+                    <div class="status w-[8px] h-[8px] ml-2 rounded-full bg-${chat[2] == 0 ? "red" : "green"}-600"></div>
+                `;
+        chat_div.setAttribute("data-user-id", chat[0]);
+        chat_div.setAttribute("data-chat-id", chat[3]);
+        chat_div.addEventListener('click', function () {
+            make_sidebar_active(chat_div);
+            add_chat(chat_div);
+        });
+        chatContainer.appendChild(chat_div);
+    });
+}
+
+
 function closeModal() {
     document.getElementById("searchInput").value = "";
     document.getElementById("userList").innerHTML = "";
@@ -262,3 +293,8 @@ document.getElementById("searchInput").addEventListener("input", filterUsers);
 document.getElementById("user-search-btn").addEventListener("click", function () {
     document.getElementById("search-modal").classList.add("fixed");
 });
+
+window.addEventListener('load', function () {
+    fetch_chats(document.body.getAttribute("data-user-id"));
+}
+);
