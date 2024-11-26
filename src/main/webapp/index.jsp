@@ -33,7 +33,17 @@
         }
 
         .active {
-            border-left: 4px solid #5468ff;
+            border-left: 4px solid #5468ff!important;
+        }
+
+        .active-chat {
+            border: 1px solid #5468ff;
+            background-color: #5468ff1a;
+
+        }
+
+        .active-chat .incoming{
+            background-color: #fff !important;
         }
     </style>
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.6.0/css/all.css">
@@ -75,7 +85,7 @@
                 <div class="conv-head-text font-thick ml-2 text-lg font-semibold">Conversations</div>
                 <div class="conv-list h-[30px]">
                     <div class="conv-item">
-                        <div class="flex items-center px-4 py-1 mt-2 cursor-pointer active">
+                        <!-- <div class="flex items-center px-4 py-1 mt-2 cursor-pointer active">
                             <div class="status w-[7px] h-[7px] rounded-full bg-red-600"></div>
                             <div class="name ml-2 text-sm">John Doe</div>
                         </div>
@@ -90,7 +100,7 @@
                         <div class="flex items-center px-4 py-1 mt-2 cursor-pointer">
                             <div class="status w-[7px] h-[7px] rounded-full bg-green-600"></div>
                             <div class="name ml-2 text-sm">John Doe</div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
