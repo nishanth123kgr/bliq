@@ -3,9 +3,9 @@ let debounceTimeout = null;
 
 
 
-async function filterUsers() {
-    const searchInput = document.getElementById("searchInput");
-    const userList = document.getElementById("userList");
+async function filterUsers(searchBox, userAddList, searchHandler) {
+    const searchInput = document.getElementById(searchBox);
+    const userList = document.getElementById(userAddList);
     const searchQuery = searchInput.value.toLowerCase();
 
     // Clear any existing debounce timeout
@@ -56,7 +56,7 @@ async function filterUsers() {
                         <div class="status w-[8px] h-[8px] ml-2 rounded-full bg-${user[2] == 0 ? "red" : "green"}-600"></div>
                     `;
                     userDiv.setAttribute("data-user-id", user[0]);
-                    userDiv.addEventListener("click", () => openChat(userDiv));
+                    userDiv.addEventListener("click", () => searchHandler(userDiv));
                     userList.appendChild(userDiv);
                 });
             }
@@ -69,11 +69,14 @@ async function filterUsers() {
     }, 300); // 300ms debounce delay
 }
 
-function add_chat(user) {
+function add_chat(user, need_user_status = true) {
     let chatContainer = document.getElementById('chat-container');
 
     let name = user.querySelector('.font-medium').innerText;
-    let status = user.querySelector('.status').classList[4].split('-')[1];
+    let status = 0;
+    if (need_user_status) {
+        status = user.querySelector('.status').classList[4].split('-')[1];
+    }
 
     for (let i = 0; i < chatContainer.children.length; i++) {
         if (chatContainer.children[i].getAttribute("data-user-id") == user.getAttribute("data-user-id")) {
@@ -98,10 +101,10 @@ function add_chat(user) {
                                 <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[25px] w-[25px]">
                             </div>
                             <div class="name ml-2 text-white text-lg font-semibold">${name}</div>
-                            <div class="status w-[8px] h-[8px] ml-2 border border-white rounded-full bg-${status == 0 ? "red" : "green"}-600"></div>
+                            ${ need_user_status ? `<div class="status w-[8px] h-[8px] ml-2 border border-white rounded-full bg-${status == 0 ? "red" : "green"}-600"></div>` : ""}
                         </div>
                         <div class="right">
-                            <button class="w-[30px] h-[30px] flex items-center justify-center text-white mr-1" onclick="close_chat(this);">
+                            <button class="w-[30px] h-[30px] flex items-center justify-center text-white mr-1 rounded-lg" onclick="close_chat(this);">
                                 <i class="fa-solid fa-times"></i>
                             </button>
                         </div>
@@ -146,7 +149,7 @@ function add_chat(user) {
                     </div>
                     <div class="msg-box relative p-1 ">
                         <input type="text"
-                            class="w-full p-2 border border-primary outline-primary rounded-lg pl-2 focus:outline-primary focus:ring-2 focus:ring-primary transition duration-200"
+                            class="text-sm w-full p-2 border border-primary outline-primary rounded-lg pl-2 focus:outline-primary focus:ring-2 focus:ring-primary transition duration-200"
                             placeholder="Type a message">
                         <i
                             class="fa-solid fa-paper-plane-top mr-1 cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-primary"></i>
@@ -179,12 +182,14 @@ function make_chat_active(chat) {
     chat.classList.add('active-chat');
 }
 
-function add_chat_in_sidebar(user) {
-    let convs = document.querySelector('.conv-item');
+function add_chat_in_sidebar(user, chat_list, user_name, need_user_status) {
+    let convs = document.querySelector(chat_list);
     let conv_list = convs.children;
     let user_id = user.getAttribute("data-user-id");
-    let user_name = user.querySelector('.font-medium').innerText;
-    let user_status = user.querySelector('.status').classList[4].split('-')[1];
+    let user_status = 0;
+    if (need_user_status) {
+        user_status = user.querySelector('.status').classList[4].split('-')[1];
+    }
     let user_conv = document.createElement('div');
     user_conv.classList = 'flex items-center space-x-3 p-2 hover:bg-gray-100 cursor-pointer border-l-4 border-transparent';
     user_conv.innerHTML = `
@@ -192,12 +197,13 @@ function add_chat_in_sidebar(user) {
                         <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[10px] w-[10px]">
                     </div>
                     <span class="font-medium">${user_name}</span>
-                    <div class="status w-[8px] h-[8px] ml-2 rounded-full bg-${user_status == 0 ? "red" : "green"}-600"></div>
+                    ${need_user_status ? `<div class="status w-[8px] h-[8px] ml-2 rounded-full bg-${user_status == 0 ? "red" : "green"}-600"></div>` : ""}
+
                 `;
     user_conv.setAttribute("data-user-id", user_id);
     user_conv.addEventListener('click', function () {
         make_sidebar_active(user_conv);
-        add_chat(user_conv);
+        add_chat(user_conv, need_user_status);
     });
     for (let i = 0; i < conv_list.length; i++) {
         if (conv_list[i].getAttribute("data-user-id") == user_id) {
@@ -214,11 +220,11 @@ function add_chat_in_sidebar(user) {
 }
 
 async function openChat(userDiv) {
-    closeModal();
+    closeSearchModal();
     const userId = userDiv.getAttribute("data-user-id");
     console.log("Opening chat with user ID:", userId);
 
-    let isAlreadyPresent = add_chat_in_sidebar(userDiv);
+    let isAlreadyPresent = add_chat_in_sidebar(userDiv, '.conv-item', userDiv.querySelector('.font-medium').innerText, true);
 
     // Create a new chat with the user
 
@@ -233,7 +239,7 @@ async function openChat(userDiv) {
             method: 'POST',
             body: params
         });
-    
+
     if (!create_chat.ok) {
         console.error("Error creating chat");
         return;
@@ -280,15 +286,17 @@ async function fetch_chats(user_id) {
 }
 
 
-function closeModal() {
+function closeSearchModal() {
     document.getElementById("searchInput").value = "";
     document.getElementById("userList").innerHTML = "";
     document.getElementById("search-modal").classList.remove("fixed");
 
 }
 
+
+
 // Attach event listener
-document.getElementById("searchInput").addEventListener("input", filterUsers);
+document.getElementById("searchInput").addEventListener("input", () => filterUsers("searchInput", "userList", openChat));
 
 document.getElementById("user-search-btn").addEventListener("click", function () {
     document.getElementById("search-modal").classList.add("fixed");
@@ -298,3 +306,102 @@ window.addEventListener('load', function () {
     fetch_chats(document.body.getAttribute("data-user-id"));
 }
 );
+
+
+// Group Creation & Search
+
+document.getElementById("create-grp-btn").addEventListener("click", function () {
+    document.getElementById("group-modal").classList.add("fixed");
+});
+
+function closeGroupModal() {
+    document.getElementById("group-modal").classList.remove("fixed");
+}
+
+function addUserToSelected(userDiv) {
+    document.getElementById("no-members-text").style.display = "none";
+    const userId = userDiv.getAttribute("data-user-id");
+
+    console.log("Adding user to group:", userId);
+    const selectedUsers = document.getElementById("selectedMembers");
+
+    // Check if the user is already selected
+    for (let i = 0; i < selectedUsers.children.length; i++) {
+        if (selectedUsers.children[i].getAttribute("data-user-id") === userId) {
+            return;
+        }
+    }
+    const selectedUser = document.createElement("div");
+    selectedUser.className =
+        "flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer";
+    selectedUser.innerHTML = `
+        <div class="prof h-[35px] w-[35px] rounded-full bg-white border border-primary flex items-center justify-center">
+            <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[20px] w-[20px]">
+        </div>
+        <span class="font-medium">${userDiv.querySelector(".font-medium").innerText}</span>
+    `;
+    selectedUser.setAttribute("data-user-id", userId);
+    selectedUser.addEventListener("click", () => {
+        selectedUser.remove();
+        if (selectedUsers.children.length === 1) {
+            document.getElementById("no-members-text").style.display = "block";
+        }
+
+    });
+    selectedUsers.appendChild(selectedUser);
+
+
+}
+
+document.getElementById("searchGrpInput").addEventListener("input", () => filterUsers("searchGrpInput", "groupList", addUserToSelected));
+
+async function createGroup() {
+    let groupName = document.getElementById("group-name").value.trim();
+    if (groupName === "") {
+        alert("Please enter a group name");
+        return;
+    }
+
+    const selectedUsers = document.getElementById("selectedMembers");
+    if (selectedUsers.children.length === 1) {
+        alert("Please select at least one user to create a group");
+        return;
+    }
+
+    const groupMembers = [];
+    for (let i = 1; i < selectedUsers.children.length; i++) {
+        groupMembers.push(selectedUsers.children[i].getAttribute("data-user-id"));
+    }
+
+    const params = new URLSearchParams();
+    let user_id = document.body.getAttribute("data-user-id");
+    groupMembers.push(user_id);
+    params.append("user_id", user_id);
+    params.append("members", groupMembers.join(","));
+    params.append("group_name", groupName);
+
+    console.log("Creating group with members:", groupMembers);
+
+    const response = await fetch("/api/create-group", {
+        method: "POST",
+        body: params,
+    });
+
+    if (!response.ok) {
+        console.error("Error creating group");
+        return;
+    }
+
+    const group = await response.json();
+    console.log("Group created:", group);
+
+    add_chat_in_sidebar(selectedUsers.children[1], '.group-item', groupName, false);
+
+    // Add your code to open the group chat
+    closeGroupModal();
+}
+
+
+document.getElementById("create-btn").addEventListener("click", createGroup);
+
+

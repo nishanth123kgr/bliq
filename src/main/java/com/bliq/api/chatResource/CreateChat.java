@@ -13,7 +13,7 @@ import jakarta.ws.rs.*;
 public class CreateChat {
     @POST
     @Produces("application/json")
-    public UserResponse setStatus(@FormParam("user_id") String user_id, @FormParam("receiver_id") String receiver_id) {
+    public UserResponse createChat(@FormParam("user_id") String user_id, @FormParam("receiver_id") String receiver_id) {
         try {
             if (user_id != null && !user_id.isEmpty() && receiver_id != null && !receiver_id.isEmpty()) {
                 // Create an EntityManagerFactory and EntityManager
