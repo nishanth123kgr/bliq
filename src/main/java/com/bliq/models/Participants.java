@@ -82,4 +82,16 @@ public class Participants {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
+
+    @Override
+    public String toString() {
+        return "Participants{" +
+                "chatId=" + chatId +
+                ", userId=" + userId +
+                ", isAdmin=" + isAdmin +
+                ", joinedAt=" + joinedAt +
+                ", lastSeen=" + lastSeen +
+                ", addedBy=" + addedBy +
+                '}';
+    }
 }

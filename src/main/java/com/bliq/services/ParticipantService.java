@@ -1,10 +1,7 @@
 package com.bliq.services;
 
 import com.bliq.models.Participants;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
@@ -48,29 +45,32 @@ public class ParticipantService {
         }
     }
 
-    public Response getParticipationsOfUser(String user_id) {
+    public List getParticipationsOfUser(String user_id) {
         try {
             // Create an EntityManagerFactory and EntityManager
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
-            EntityManager em = emf.createEntityManager();
 
-            String jpql = "SELECT p FROM Participants p WHERE p.userId = :userId";
-            TypedQuery<Participants> query = em.createQuery(jpql, Participants.class);
+            String jpql = "SELECT DISTINCT p.userId, p.chatId, u.name, u.status " +
+                    "FROM Participants p " +
+                    "JOIN Users u ON p.userId = u.id " +
+                    "WHERE p.chatId IN (" +
+                    "    SELECT DISTINCT sub.chatId " +
+                    "    FROM Participants sub " +
+                    "    WHERE sub.userId = :userId" +
+                    ") " +
+                    "AND p.userId != :userId";
+
+            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
             query.setParameter("userId", user_id);
 
-            System.out.println("user_id: " + user_id);
-
-            List<Participants> results = query.getResultList();
+            List<Object[]> results = query.getResultList();
 
             System.out.println("results: " + results);
 
-            return Response.ok(results).build();
+            return results;
         } catch (Exception e) {
             e.printStackTrace();
             // Return an error message if an exception occurs
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Internal server error")
-                    .build();
+            return null;
         }
     }
 }

@@ -8,6 +8,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
+
 @Path("/get-participations")
 public class GetParticipationsOfUser {
     @GET
@@ -20,7 +22,11 @@ public class GetParticipationsOfUser {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
             EntityManager em = emf.createEntityManager();
             ParticipantService participantService = new ParticipantService(em);
-            return Response.ok(participantService.getParticipationsOfUser(user_id)).build();
+
+            List participations = participantService.getParticipationsOfUser(user_id);
+
+
+            return Response.ok(participations).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
