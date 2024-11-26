@@ -6,6 +6,8 @@ import jakarta.persistence.StoredProcedureQuery;
 
 import com.bliq.models.Users;
 
+import java.util.List;
+
 
 public class UserService {
     private final EntityManager em;
@@ -99,6 +101,65 @@ public class UserService {
         }
 
         return new String[]{"User does not exist", "error"};
+    }
+
+    public List searchUsers(String searchQuery){
+        try {
+            // Create the stored procedure query
+            StoredProcedureQuery query = em.createStoredProcedureQuery("SearchUsers");
+
+            // Register input and output parameters
+            query.registerStoredProcedureParameter("p_search_query", String.class, ParameterMode.IN);
+
+            // Set the input parameter
+            query.setParameter("p_search_query", searchQuery);
+
+            // Execute the query
+            query.execute();
+
+            // Retrieve the output parameters
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public String[] updateUserStatus(String user_id, String status){
+        try {
+            em.getTransaction().begin();
+            // Create the stored procedure query
+            StoredProcedureQuery query = em.createStoredProcedureQuery("UpdateUserStatus");
+
+            // Register input and output parameters
+            query.registerStoredProcedureParameter("p_user_id", Integer.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("p_status", Integer.class, ParameterMode.IN);
+
+            System.out.println("UserService: updateUserStatus: userId: " + user_id);
+            System.out.println("UserService: updateUserStatus: status: " + status);
+
+
+            // Set the input parameters
+            query.setParameter("p_user_id", Integer.parseInt(user_id));
+            query.setParameter("p_status", Integer.parseInt(status));
+
+            // Execute the query
+            query.execute();
+
+            System.out.println("UserService: updateUserStatus: query: " + query);
+
+
+            em.getTransaction().commit();
+
+            System.out.println("UserService: updateUserStatus: success");
+
+            return new String[]{"User status updated successfully", "success"};
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new String[]{"User status update failed", "error"};
     }
 }
 

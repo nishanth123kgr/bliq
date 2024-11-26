@@ -24,31 +24,42 @@
         <!-- User List -->
         <div class="space-y-2 overflow-y-auto border-t border-gray-200 pt-4" style="max-height: 300px;" id="userList">
             <!-- Example User -->
-            <div class="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
-                <img src="/api/placeholder/40/40" alt="User" class="w-10 h-10 rounded-full object-cover" />
-                <span class="font-medium">John Doe</span>
-            </div>
+            <div class="text-gray-500 text-center">Start Typing to Search</div>
         </div>
     </div>
 </div>
 
 <script>
-    function debounce(func, delay) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), delay);
-        };
+
+let isProcessing = false;
+let debounceTimeout = null;
+
+async function filterUsers() {
+    const searchInput = document.getElementById("searchInput");
+    const userList = document.getElementById("userList");
+    const searchQuery = searchInput.value.toLowerCase();
+
+    // Clear any existing debounce timeout
+    if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
     }
 
-    async function filterUsers() {
-        const searchQuery = document.getElementById("searchInput").value.toLowerCase();
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear existing users
+    // Clear existing users
+    userList.innerHTML = "";
 
-        if (searchQuery.trim() === "") {
-            return; // Avoid unnecessary API calls for empty input
-        }
+    // Skip processing for empty query
+    if (searchQuery.trim() === "") {
+        return;
+    }
+
+    // Prevent multiple simultaneous API calls
+    if (isProcessing) {
+        return;
+    }
+
+    // Debounce the API call
+    debounceTimeout = setTimeout(async () => {
+        isProcessing = true;
 
         try {
             // Fetch matching users from the API
@@ -56,7 +67,7 @@
             if (!response.ok) {
                 throw new Error("Error fetching users");
             }
-            const users = await response.json();
+            let users = await response.json();
 
             // Populate the user list
             if (users.length === 0) {
@@ -67,26 +78,28 @@
                     userDiv.className =
                         "flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg cursor-pointer";
                     userDiv.innerHTML = `
-            <img src="${user.image}" alt="${user.name}" class="w-10 h-10 rounded-full object-cover" />
-            <span class="font-medium">${user.name}</span>
-          `;
+                        <div class="prof h-[35px] w-[35px] rounded-full bg-white border border-primary flex items-center justify-center">
+                            <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[20px] w-[20px]">
+                        </div>
+                        <span class="font-medium">${user[1]}</span>
+                    `;
                     userList.appendChild(userDiv);
                 });
             }
         } catch (error) {
             console.error("Error:", error);
             userList.innerHTML = `<div class="text-red-500 text-center">Failed to fetch users</div>`;
+        } finally {
+            isProcessing = false;
         }
-    }
+    }, 300); // 300ms debounce delay
+}
 
-    function closeModal() {
-        document.querySelector(".fixed").style.display = "none";
-    }
+function closeModal() {
+    document.querySelector(".fixed").style.display = "none";
+}
 
-    const debouncedFilterUsers = debounce(filterUsers, 300);
-
-    // Attach event listener with debounce
-    document.getElementById("searchInput").addEventListener("input", debouncedFilterUsers);
-
+// Attach event listener
+document.getElementById("searchInput").addEventListener("input", filterUsers);
 
 </script>
