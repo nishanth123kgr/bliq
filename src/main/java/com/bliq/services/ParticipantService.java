@@ -66,6 +66,9 @@ public class ParticipantService {
             // Commit the transaction
             em.getTransaction().commit();
 
+            ChatActionService chatActionService = new ChatActionService(em);
+            chatActionService.createAction("0", chat_id, user_id, added_by);
+
             // Return the chat_id and a success message
             return new String[]{String.valueOf(participant.getChatId()), "success"};
         } catch (Exception e) {

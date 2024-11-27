@@ -53,7 +53,7 @@ public class JoinRequestService {
 
     public String[] acceptJoinRequest(String join_request_id, String admin_id) {
         try {
-            System.out.println("Join request id: " + join_request_id);
+
             JoinRequests joinRequest = em.find(JoinRequests.class, Long.parseLong(join_request_id));
             if(joinRequest == null) {
                 return new String[]{"Join request not found", "error"};
