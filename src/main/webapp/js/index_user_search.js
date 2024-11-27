@@ -433,6 +433,7 @@ async function createGroup() {
     params.append("user_id", user_id);
     params.append("members", groupMembers.join(","));
     params.append("group_name", groupName);
+    params.append("is_private", 1);
 
     console.log("Creating group with members:", groupMembers);
 

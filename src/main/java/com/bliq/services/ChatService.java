@@ -44,13 +44,13 @@ public class ChatService {
         }
     }
 
-    public String[] createGroup(String user_id, String group_name) {
+    public String[] createGroup(String user_id, String group_name, Boolean isPrivate) {
         try {
             // Create a new Chat object
             Chats chat = new Chats();
             chat.setChatName(group_name);
             chat.setGroup(true);
-            chat.setPrivate(false);
+            chat.setPrivate(isPrivate);
             chat.setCreatedBy(Long.parseLong(user_id));
 
             // Begin a transaction
