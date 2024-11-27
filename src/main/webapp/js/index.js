@@ -15,12 +15,18 @@
 
 
 
-function close_chat(chat_close_btn){
+function close_chat(chat_close_btn, is_group = false) {
     
 
-    let side_bar_conv = document.querySelector('.conv-item .active');
-    let this_chat_user_id = chat_close_btn.parentElement.parentElement.parentElement.getAttribute('data-user-id');
-    let side_bar_conv_user_id = side_bar_conv.getAttribute('data-user-id');
+    let side_bar_conv = document.querySelector('.active');
+    let this_chat_user_id, side_bar_conv_user_id
+    if(!is_group){
+        this_chat_user_id = chat_close_btn.parentElement.parentElement.parentElement.getAttribute('data-user-id');
+        side_bar_conv_user_id = side_bar_conv.getAttribute('data-user-id');
+    } else {
+        this_chat_user_id = chat_close_btn.parentElement.parentElement.parentElement.getAttribute('data-group-id');
+        side_bar_conv_user_id = side_bar_conv.getAttribute('data-group-id');
+    }
 
     console.log(this_chat_user_id, side_bar_conv_user_id);
 

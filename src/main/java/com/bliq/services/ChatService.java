@@ -2,6 +2,10 @@ package com.bliq.services;
 
 import com.bliq.models.Chats;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.ws.rs.core.Response;
+
+import java.util.List;
 
 
 public class ChatService {
@@ -64,6 +68,31 @@ public class ChatService {
             e.printStackTrace();
             // Return an error message if an exception occurs
             return new String[]{"Error creating chat", "error"};
+        }
+    }
+
+    public List getGroupsAUserPartOf(String user_id) {
+        try {
+            // Create an EntityManagerFactory and EntityManager
+
+            String jpql = "SELECT DISTINCT c.id, c.chatName " +
+                    "FROM Chats c " +
+                    "JOIN Participants p ON c.id = p.chatId " +
+                    "WHERE p.userId = :userId " +
+                    "AND c.isGroup = true";
+
+            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
+            query.setParameter("userId", Long.parseLong(user_id));
+
+            List<Object[]> results = query.getResultList();
+
+            System.out.println("results: " + results);
+
+            return results;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return an error message if an exception occurs
+            return null;
         }
     }
 }

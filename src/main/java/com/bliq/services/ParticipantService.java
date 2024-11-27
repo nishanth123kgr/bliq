@@ -49,15 +49,17 @@ public class ParticipantService {
         try {
             // Create an EntityManagerFactory and EntityManager
 
-            String jpql = "SELECT DISTINCT p.userId, p.chatId, u.name, u.status " +
-                    "FROM Participants p " +
-                    "JOIN Users u ON p.userId = u.id " +
-                    "WHERE p.chatId IN (" +
-                    "    SELECT DISTINCT sub.chatId " +
-                    "    FROM Participants sub " +
-                    "    WHERE sub.userId = :userId" +
-                    ") " +
-                    "AND p.userId != :userId";
+            String jpql = "SELECT DISTINCT p.userId, p.chatId, u.name, u.status\n" +
+                    "FROM Participants p\n" +
+                    "JOIN Users u ON p.userId = u.id\n" +
+                    "JOIN Chats c ON p.chatId = c.id\n" +
+                    "WHERE p.chatId IN (\n" +
+                    "    SELECT DISTINCT sub.chatId\n" +
+                    "    FROM Participants sub\n" +
+                    "    WHERE sub.userId = :userId\n" +
+                    ")\n" +
+                    "AND p.userId != :userId\n" +
+                    "AND c.isGroup = FALSE";
 
             TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
             query.setParameter("userId", user_id);
