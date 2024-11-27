@@ -37,27 +37,41 @@ public class NotificationService {
                 ParticipantService participantService = new ParticipantService(em);
                 try{
                     List<Participants> participants = participantService.getUsersToBeNotified(Long.valueOf(mes_req_id));
-                    for(Participants participant : participants) {
-                        if(participant.getUserId() == Long.parseLong(user_id)) {
-                            continue;
-                        }
-                        NotificationRecipients notificationRecipient = new NotificationRecipients();
-                        notificationRecipient.setRecipientId(participant.getUserId());
-                        notificationRecipient.setNotificationId(notification.getId());
-                        em.getTransaction().begin();
-                        em.persist(notificationRecipient);
-                        em.getTransaction().commit();
-                    }
+                    sendNotifications(user_id, notification, participants);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return new String[]{"Error Adding notification Recipients", "error"};
                 }
+            } else if (type.equals("1")) {
+                ParticipantService participantService = new ParticipantService(em);
+                try{
+                    List<Participants> participants = participantService.getAdminsToBeNotified(Long.valueOf(mes_req_id));
+                    sendNotifications(user_id, notification, participants);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return new String[]{"Error Adding notification Recipients", "error"};
+                }
+
             }
 
             return new String[]{"Notification created successfully", "success"};
         } catch (Exception e) {
             e.printStackTrace();
             return new String[]{"Error creating notification", "error"};
+        }
+    }
+
+    private void sendNotifications(String user_id, Notifications notification, List<Participants> participants) {
+        for(Participants participant : participants) {
+            if(participant.getUserId() == Long.parseLong(user_id)) {
+                continue;
+            }
+            NotificationRecipients notificationRecipient = new NotificationRecipients();
+            notificationRecipient.setRecipientId(participant.getUserId());
+            notificationRecipient.setNotificationId(notification.getId());
+            em.getTransaction().begin();
+            em.persist(notificationRecipient);
+            em.getTransaction().commit();
         }
     }
 
@@ -77,26 +91,26 @@ public class NotificationService {
 
     public String[] getNotifications(String user_id) {
         try {
-            String jpql = "SELECT n FROM Notifications n WHERE n.sendTo = :user_id";
-            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
+            String jpql = "select n from Notifications n where n.id = (SELECT r.id from NotificationRecipients r WHERE r.recipientId = :user_id)";
+            TypedQuery<Notifications> query = em.createQuery(jpql, Notifications.class);
             query.setParameter("user_id", Long.parseLong(user_id));
-            List<Object[]> notifications = query.getResultList();
+            List<Notifications> notifications = query.getResultList();
 
             JSONArray jsonNotifications = new JSONArray();
-            for (Object[] notification : notifications) {
-                System.out.println(Arrays.toString(notification));
+
+            for (Notifications notification : notifications) {
                 JSONObject jsonNotification = new JSONObject();
-                jsonNotification.put("id", notification[0]);
-                jsonNotification.put("send_to", notification[1]);
-                System.out.println(notification[1]);
-                jsonNotification.put("req_id", notification[2]);
-                jsonNotification.put("msg_id", notification[3]);
-                jsonNotification.put("type", notification[4]);
+                jsonNotification.put("id", notification.getId());
+                jsonNotification.put("req_id", notification.getReqId());
+                jsonNotification.put("msg_id", notification.getMsgId());
+                jsonNotification.put("type", notification.getType());
                 jsonNotifications.put(jsonNotification);
             }
 
+            System.out.println("Notifications: " + jsonNotifications);
 
-            return new String[]{notifications.toString(), "success"};
+
+            return new String[]{jsonNotifications.toString(), "success"};
         } catch (Exception e) {
             e.printStackTrace();
             return new String[]{"Error retrieving notifications", "error"};

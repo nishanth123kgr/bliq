@@ -1,6 +1,7 @@
 package com.bliq.api.joinRequestResource;
 
 import com.bliq.services.JoinRequestService;
+import com.bliq.services.NotificationService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -28,6 +29,17 @@ public class CreateJoinRequest {
                         .entity(result[0])
                         .build();
             }
+
+            NotificationService notificationService = new NotificationService(em);
+
+            String[] notificationResult = notificationService.createNotification(result[2], "1", user_id);
+
+            if (notificationResult[1].equals("error")) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(notificationResult[0])
+                        .build();
+            }
+
 
             return Response.ok(result[0]).build();
 

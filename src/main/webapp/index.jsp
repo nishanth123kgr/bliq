@@ -187,9 +187,9 @@
             <!-- Header -->
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold">Create Group</h2>
-                <button class="text-gray-500 hover:text-gray-700" onclick="closeGroupModal()">
+                <div class="text-gray-500 hover:text-gray-700 cursor-pointer" onclick="closeGroupModal()">
                     <i class="fa-solid fa-times"></i>
-                </button>
+                </div>
             </div>
             <div class="add-group-container flex">
 
@@ -201,7 +201,7 @@
                             <div class="flex items-center gap-1 mb-2">
                                 <input type="radio" name="privacy" id="public" value="public" checked
                                     class="mr-1 cursor-pointer">
-                                <label for="name" class="block text-sm font-medium text-gray-900">Public</label>
+                                <label for="name" class="block text-sm font-medium text-gray-900 mr-1">Public</label>
                                 <input type="radio" name="privacy" id="private" value="private" class="mr-1 cursor-pointer">
                                 <label for="name" class="block text-sm font-medium text-gray-900">Private</label>
                             </div>

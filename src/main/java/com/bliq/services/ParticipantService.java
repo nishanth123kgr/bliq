@@ -117,4 +117,17 @@ public class ParticipantService {
             return null;
         }
     }
+
+    public List<Participants> getAdminsToBeNotified(Long chat_id) {
+        try {
+            String jpql = "SELECT p FROM Participants p WHERE p.chatId = :chatId AND p.isAdmin = TRUE";
+            TypedQuery<Participants> query = em.createQuery(jpql, Participants.class);
+            query.setParameter("chatId", chat_id);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 }

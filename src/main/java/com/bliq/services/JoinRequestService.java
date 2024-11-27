@@ -42,7 +42,7 @@ public class JoinRequestService {
             em.getTransaction().begin();
             em.persist(joinRequest);
             em.getTransaction().commit();
-            return new String[]{"Join request created successfully", "success"};
+            return new String[]{"Join request created successfully", "success", String.valueOf(joinRequest.getId())};
 
         }
         catch (Exception e) {
