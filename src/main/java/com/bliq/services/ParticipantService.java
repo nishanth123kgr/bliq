@@ -118,11 +118,15 @@ public class ParticipantService {
         }
     }
 
-    public List<Participants> getAdminsToBeNotified(Long chat_id) {
+    public List<Participants> getAdminsToBeNotified(Long request_id) {
         try {
-            String jpql = "SELECT p FROM Participants p WHERE p.chatId = :chatId AND p.isAdmin = TRUE";
+            String jpql = """
+                    SELECT p FROM Participants p JOIN JoinRequests j ON p.chatId = j.chatId
+                    WHERE j.id = :requestId AND p.isAdmin = TRUE
+                    """;
             TypedQuery<Participants> query = em.createQuery(jpql, Participants.class);
-            query.setParameter("chatId", chat_id);
+            query.setParameter("requestId", request_id);
+            System.out.println("Admins to be notified: " + query.getResultList());
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();

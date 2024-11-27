@@ -91,7 +91,7 @@ public class NotificationService {
 
     public String[] getNotifications(String user_id) {
         try {
-            String jpql = "select n from Notifications n where n.id = (SELECT r.id from NotificationRecipients r WHERE r.recipientId = :user_id)";
+            String jpql = "select n from Notifications n where n.id IN (SELECT r.notificationId from NotificationRecipients r WHERE r.recipientId = :user_id)";
             TypedQuery<Notifications> query = em.createQuery(jpql, Notifications.class);
             query.setParameter("user_id", Long.parseLong(user_id));
             List<Notifications> notifications = query.getResultList();
