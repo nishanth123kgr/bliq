@@ -75,4 +75,16 @@ public class ParticipantService {
             return null;
         }
     }
+
+    public List<Participants> getUsersToBeNotified(Long messageId) {
+        try {
+            String jpql = "SELECT p FROM Participants p WHERE p.chatId = (SELECT m.chatId FROM Messages m WHERE m.id = :messageId)";
+            TypedQuery<Participants> query = em.createQuery(jpql, Participants.class);
+            query.setParameter("messageId", messageId);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

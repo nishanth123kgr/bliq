@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class MessageService {
-    private EntityManager em;
+    private final EntityManager em;
 
     public MessageService(EntityManager em) {
         this.em = em;
@@ -17,6 +17,26 @@ public class MessageService {
 
     public String[] createMessage(String chat_id, String user_id, String message) {
         try {
+
+            if(message.length() > 1000) {
+                return new String[]{"Message too long", "error"};
+            }
+
+            if(message.isEmpty()) {
+                return new String[]{"Message cannot be empty", "error"};
+            }
+
+            System.out.println("chat_id: " + chat_id);
+            System.out.println("user_id: " + user_id);
+            System.out.println("message: " + message);
+
+            ChatService chatService = new ChatService(em);
+
+            if(!chatService.isUserPartOfChat(user_id, chat_id)) {
+                return new String[]{"User is not part of chat", "error"};
+            }
+
+
             // Create a new Message object
             Messages msg = new Messages();
             msg.setChatId(Long.parseLong(chat_id));
@@ -31,6 +51,17 @@ public class MessageService {
 
             // Commit the transaction
             em.getTransaction().commit();
+
+            try {
+                NotificationService notificationService = new NotificationService(em);
+                notificationService.createNotification(String.valueOf(msg.getId()), "0", user_id);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return new String[]{"Error creating notification", "error"};
+            }
+
+
 
             // Return the message_id and a success message
             return new String[]{String.valueOf(msg.getId()), "success"};
@@ -67,10 +98,11 @@ public class MessageService {
     public String[] getMessages(String chat_id) {
         try {
             // Create a query to get all messages in a chat
-            String jpql = "SELECT m.id, m.senderId, m.content, m.sentAt\n" +
-                    "FROM Messages m\n" +
-                    "WHERE m.chatId = :chatId\n" +
-                    "ORDER BY m.sentAt ASC";
+            String jpql = """
+                    SELECT m.id, m.senderId, m.content, m.sentAt
+                    FROM Messages m
+                    WHERE m.chatId = :chatId
+                    ORDER BY m.sentAt ASC""";
             TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
             query.setParameter("chatId", Long.parseLong(chat_id));
             List<Object[]> results = query.getResultList();

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ChatService {
 
-    private EntityManager em;
+    private final EntityManager em;
 
     public ChatService(EntityManager em) {
         this.em = em;
@@ -93,6 +93,33 @@ public class ChatService {
             e.printStackTrace();
             // Return an error message if an exception occurs
             return null;
+        }
+    }
+
+    public boolean isUserPartOfChat(String user_id, String group_id) {
+        try {
+            // Create an EntityManagerFactory and EntityManager
+
+            String jpql = """
+                    SELECT p.userId
+                    FROM Participants p
+                    WHERE p.userId = :userId
+                    AND p.chatId = :chatId
+                    """;
+
+            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
+            query.setParameter("userId", Long.parseLong(user_id));
+            query.setParameter("chatId", Long.parseLong(group_id));
+
+            List<Object[]> results = query.getResultList();
+
+            System.out.println("results: " + results);
+
+            return !results.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return an error message if an exception occurs
+            return false;
         }
     }
 }
