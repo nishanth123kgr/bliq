@@ -1,8 +1,11 @@
 package com.bliq.services;
 
 import com.bliq.models.JoinRequests;
+import com.google.gson.Gson;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+
+import java.util.List;
 
 public class JoinRequestService {
     private EntityManager em;
@@ -50,6 +53,7 @@ public class JoinRequestService {
 
     public String[] acceptJoinRequest(String join_request_id, String admin_id) {
         try {
+            System.out.println("Join request id: " + join_request_id);
             JoinRequests joinRequest = em.find(JoinRequests.class, Long.parseLong(join_request_id));
             if(joinRequest == null) {
                 return new String[]{"Join request not found", "error"};
@@ -101,18 +105,22 @@ public class JoinRequestService {
         }
     }
 
-//    public String[] getJoinRequests(String chat_id) {
-//        try {
-//            List<JoinRequests> joinRequests = em.createQuery("SELECT j FROM JoinRequests j WHERE j.chatId = :chatId", JoinRequests.class)
-//                    .setParameter("chatId", Long.parseLong(chat_id))
-//                    .getResultList();
-//            return new String[]{new Gson().toJson(joinRequests), "success"};
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//            return new String[]{"Error getting join requests", "error"};
-//        }
-//    }
+    public String[] getJoinRequests(String chat_id, String admin_id) {
+        try {
+            ParticipantService participantService = new ParticipantService(em);
+            if(!participantService.isUserAdmin(chat_id, admin_id)) {
+                return new String[]{"User is not an admin", "error"};
+            }
+            List<JoinRequests> joinRequests = em.createQuery("SELECT j FROM JoinRequests j WHERE j.chatId = :chatId", JoinRequests.class)
+                    .setParameter("chatId", Long.parseLong(chat_id))
+                    .getResultList();
+            return new String[]{new Gson().toJson(joinRequests), "success"};
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new String[]{"Error getting join requests", "error"};
+        }
+    }
 
 
 

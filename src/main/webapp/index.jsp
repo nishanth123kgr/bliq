@@ -196,7 +196,16 @@
 
                 <div class="left w-1/2 h-full">
                     <div class="col-span-2 mb-2">
-                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Group Name</label>
+                        <div class="flex items-center justify-between">
+                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Group Name</label>
+                            <div class="flex items-center gap-1 mb-2">
+                                <input type="radio" name="privacy" id="public" value="public" checked
+                                    class="mr-1 cursor-pointer">
+                                <label for="name" class="block text-sm font-medium text-gray-900">Public</label>
+                                <input type="radio" name="privacy" id="private" value="private" class="mr-1 cursor-pointer">
+                                <label for="name" class="block text-sm font-medium text-gray-900">Private</label>
+                            </div>
+                        </div>
                         <input type="text" name="name" id="group-name"
                             class="border border-primary text-sm rounded-lg transition duration-200 focus:outline-primary focus:ring-primary focus:ring-2  block w-full p-2.5 "
                             placeholder="Type Group name" required="true">
