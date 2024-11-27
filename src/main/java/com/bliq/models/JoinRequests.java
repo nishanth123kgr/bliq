@@ -38,9 +38,9 @@ public class JoinRequests {
         }
     }
 
-    public JoinRequests(long userId, long chatId) {
-        this.userId = userId;
-        this.chatId = chatId;
+    public JoinRequests(String userId, String chatId) {
+        this.userId = Long.parseLong(userId);
+        this.chatId = Long.parseLong(chatId);
 
     }
 

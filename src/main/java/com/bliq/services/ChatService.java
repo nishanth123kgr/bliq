@@ -122,4 +122,35 @@ public class ChatService {
             return false;
         }
     }
+
+    public boolean isPrivateChat(String chat_id) {
+        try {
+            // Create an EntityManagerFactory and EntityManager
+
+            String jpql = """
+                    SELECT c.isPrivate
+                    FROM Chats c
+                    WHERE c.id = :chatId
+                    """;
+
+            TypedQuery<Boolean> query = em.createQuery(jpql, Boolean.class);
+            query.setParameter("chatId", Long.parseLong(chat_id));
+
+            return query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return an error message if an exception occurs
+            return false;
+        }
+    }
+
+    public boolean chatExists(String chatId) {
+        try {
+            Chats chat = em.find(Chats.class, Long.parseLong(chatId));
+            return chat != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

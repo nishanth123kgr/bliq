@@ -161,5 +161,15 @@ public class UserService {
 
         return new String[]{"User status update failed", "error"};
     }
+
+    public boolean userExists(String userId) {
+        try {
+            Users user = em.find(Users.class, Long.parseLong(userId));
+            return user != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
 

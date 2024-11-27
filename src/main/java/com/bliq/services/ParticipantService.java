@@ -13,6 +13,36 @@ public class ParticipantService {
         this.em = em;
     }
 
+    public Boolean isParticipant(String chat_id, String user_id) {
+        try {
+            // Create a query to check if a user is a participant in a chat
+            String jpql = "SELECT p FROM Participants p WHERE p.chatId = :chatId AND p.userId = :userId";
+            return executeParticipantQuery(chat_id, user_id, jpql);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isUserAdmin(String chat_id, String user_id) {
+        try {
+            // Create a query to check if a user is an admin in a chat
+            String jpql = "SELECT p FROM Participants p WHERE p.chatId = :chatId AND p.userId = :userId AND p.isAdmin= TRUE";
+            return executeParticipantQuery(chat_id, user_id, jpql);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean executeParticipantQuery(String chat_id, String user_id, String jpql) {
+        TypedQuery<Participants> query = em.createQuery(jpql, Participants.class);
+        query.setParameter("chatId", Long.parseLong(chat_id));
+        query.setParameter("userId", Long.parseLong(user_id));
+        List<Participants> results = query.getResultList();
+        return !results.isEmpty();
+    }
+
     public String[] addParticipant(String chat_id, String user_id, String added_by, Boolean isAdmin) {
         try {
 
