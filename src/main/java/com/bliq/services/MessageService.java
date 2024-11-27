@@ -35,4 +35,27 @@ public class MessageService {
             return new String[]{"Error creating message", "error"};
         }
     }
+
+    public String[] deleteMessage(String message_id) {
+        try {
+            // Find the message to delete
+            Messages msg = em.find(Messages.class, Long.parseLong(message_id));
+
+            // Begin a transaction
+            em.getTransaction().begin();
+
+            // Remove the message from the database
+            em.remove(msg);
+
+            // Commit the transaction
+            em.getTransaction().commit();
+
+            // Return a success message
+            return new String[]{"Message deleted successfully", "success"};
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return an error message if an exception occurs
+            return new String[]{"Error deleting message", "error"};
+        }
+    }
 }
