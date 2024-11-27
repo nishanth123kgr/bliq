@@ -13,7 +13,7 @@ public class ParticipantService {
         this.em = em;
     }
 
-    public String[] addParticipant(String chat_id, String user_id, String added_by) {
+    public String[] addParticipant(String chat_id, String user_id, String added_by, Boolean isAdmin) {
         try {
 
             // Create an EntityManagerFactory and EntityManager
@@ -24,7 +24,7 @@ public class ParticipantService {
             Participants participant = new Participants();
             participant.setChatId(Long.parseLong(chat_id));
             participant.setUserId(Long.parseLong(user_id));
-            participant.setAdmin(false);
+            participant.setAdmin(isAdmin);
             participant.setAddedBy(Long.parseLong(added_by));
 
             // Begin a transaction

@@ -31,13 +31,13 @@ public class CreateChat {
                 ParticipantService participantService = new ParticipantService(em);
 
                 // Call addParticipant and return the result
-                String[] participant_user = participantService.addParticipant(chat[0], user_id, user_id);
+                String[] participant_user = participantService.addParticipant(chat[0], user_id, user_id, false);
 
                 if (participant_user[1].equals("error")) {
                     return new UserResponse(participant_user[0], "error");
                 }
 
-                String[] participant_receiver = participantService.addParticipant(chat[0], receiver_id, user_id);
+                String[] participant_receiver = participantService.addParticipant(chat[0], receiver_id, user_id, false);
 
                 if (participant_receiver[1].equals("error")) {
                     return new UserResponse(participant_receiver[0], "error");

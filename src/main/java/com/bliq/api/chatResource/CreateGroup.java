@@ -9,6 +9,7 @@ import jakarta.persistence.Persistence;
 import jakarta.ws.rs.*;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Path("/create-group")
 public class CreateGroup {
@@ -40,7 +41,7 @@ public class CreateGroup {
         ParticipantService participantService = new ParticipantService(em);
 
         for (String member : members) {
-            String[] participant = participantService.addParticipant(group[0], member, user_id);
+            String[] participant = participantService.addParticipant(group[0], member, user_id, Objects.equals(user_id, member));
 
             if (participant[1].equals("error")) {
                 return new UserResponse("Error adding participant", "error");
