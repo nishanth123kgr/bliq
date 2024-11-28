@@ -54,7 +54,7 @@
 
     </style>
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.6.0/css/all.css">
-
+    <link rel="icon" href="assets/logo/favicon.ico" type="image/x-icon">
 </head>
 
 <body class="h-screen w-screen font-montserrat overflow-hidden" data-user-id=<%=session.getAttribute("userId")%>>
@@ -284,6 +284,7 @@
     </script>
 
     <script src="js/index_user_search.js"></script>
+    <script src="js/message_utils.js"></script>
     <script src="js/index.js"></script>
 </body>
 

@@ -69,7 +69,7 @@ async function filterUsers(searchBox, userAddList, searchHandler) {
     }, 300); // 300ms debounce delay
 }
 
-function add_chat(user, need_user_status = true, is_group = false) {
+async function add_chat(user, need_user_status = true, is_group = false) {
     let chatContainer = document.getElementById('chat-container');
 
     let name = user.querySelector('.font-medium').innerText;
@@ -79,11 +79,7 @@ function add_chat(user, need_user_status = true, is_group = false) {
     }
 
     for (let i = 0; i < chatContainer.children.length; i++) {
-        if (is_group && chatContainer.children[i].getAttribute("data-group-id") == user.getAttribute("data-group-id")) {
-            make_chat_active(chatContainer.children[i]);
-            return;
-        } else if
-            (!is_group && chatContainer.children[i].getAttribute("data-user-id") == user.getAttribute("data-user-id")) {
+        if (is_group && chatContainer.children[i].getAttribute("data-chat-id") == user.getAttribute("data-chat-id")) {
             make_chat_active(chatContainer.children[i]);
             return;
         }
@@ -92,13 +88,67 @@ function add_chat(user, need_user_status = true, is_group = false) {
 
     let chat = document.createElement('div');
 
-    if (!is_group) {
-        chat.setAttribute("data-user-id", user.getAttribute("data-user-id"));
-    } else {
-        chat.setAttribute("data-group-id", user.getAttribute("data-group-id"));
-    }
+    let chat_id = user.getAttribute("data-chat-id");
+
+    chat.setAttribute("data-chat-id", chat_id);
+
+
 
     chat.classList = 'flex-child overflow-hidden flex flex-col justify-between border rounded-lg h-full sm:w-full md:w-1/3 lg:w-1/4 ';
+
+    let IncomingMessageTemplate = (message, sentTime) => {
+        return `<div class="flex items-start gap-2.5 mb-2">
+                            <div
+                                class="prof h-[30px] w-[30px] border rounded-full bg-white flex items-center justify-center">
+                                <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[15px] w-[15px]">
+                            </div>
+                            <div
+                                class="flex flex-col w-full incoming border max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
+                                <p class="text-sm font-normal text-gray-900">${message}</p>
+                                <div class="flex self-end text-gray-500 mt-1">
+                                    <span class="text-xs  self-end">${sentTime}</span>
+                                </div>
+
+                            </div>
+                        </div>`};
+
+    let OutgoingMessageTemplate = (message, sentTime) => {
+        return `<div class="flex items-start gap-2.5 flex-row-reverse mb-2">
+                            <div
+                                class="prof h-[30px] w-[30px] border rounded-full bg-white flex items-center justify-center">
+                                <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[15px] w-[15px]">
+                            </div>
+                            <div
+                                class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-primary rounded-s-xl rounded-ee-xl">
+                                <p class="text-sm font-normal text-white">${message}</p>
+                                <div class="flex items-center self-end text-white mt-1">
+                                    <span class="text-xs self-end">${sentTime}</span>
+                                    <div class="ml-2 dot h-[4px] w-[4px] bg-white rounded-full"></div>
+                                    <div class="text-xs self-end ml-2">Sent</div>
+                                </div>
+                            </div>
+                        </div>`};
+
+    let messages_html = "";
+
+    let messages = await getChat(chat_id);
+
+    let user_id = document.body.getAttribute("data-user-id");
+
+    console.log(messages);
+
+    for (const message of messages) {
+        let message_data = await getMessage(message.message_id);
+
+        if (message.sender_id == user_id) {
+            messages_html += OutgoingMessageTemplate(message_data.content, convertTime(message.created_at));
+        } else {
+            messages_html += IncomingMessageTemplate(message_data.content, convertTime(message.created_at));
+        }
+    }
+
+
+
 
 
 
@@ -153,21 +203,36 @@ function add_chat(user, need_user_status = true, is_group = false) {
                             </div>
                         </div>
 
+                        ${messages_html}
+
                         <!-- Add more messages as needed -->
                     </div>
                     <div class="msg-box relative p-1 ">
                         <input type="text"
-                            class="text-sm w-full p-2 border border-primary outline-primary rounded-lg pl-2 focus:outline-primary focus:ring-2 focus:ring-primary transition duration-200"
+                            class="message-input text-sm w-full p-2 border border-primary outline-primary rounded-lg pl-2 focus:outline-primary focus:ring-2 focus:ring-primary transition duration-200"
                             placeholder="Type a message">
                         <i
-                            class="fa-solid fa-paper-plane-top mr-1 cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-primary"></i>
+                            class="fa-solid fa-paper-plane-top mr-1 cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-primary message-send-btn"></i>
 
                     </div>`;
 
     chat.innerHTML = chat_html;
 
+    let chat_msg = chat.querySelector('.chat-msgs');
+
+    chat_msg.scrollTop = chat_msg.scrollHeight;
+
+    chat.querySelector('.message-send-btn').addEventListener('click', (e) => { sendMessage(e, chat); });
+
+    chat.querySelector('.message-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage(e, chat);
+        }
+    });
+
     chatContainer.insertBefore(chat, chatContainer.firstChild);
     make_chat_active(chat);
+    
 
     chat.addEventListener('click', function () {
         make_chat_active(chat);
@@ -190,20 +255,29 @@ function make_chat_active(chat) {
     chat.classList.add('active-chat');
 }
 
-function add_chat_in_sidebar(user, chat_list, user_name, need_user_status, is_group = false) {
+function isAlreadyPresent(conv_list, is_group, user_id) {
+    for (let i = 0; i < conv_list.length; i++) {
+        if (is_group && conv_list[i].getAttribute("data-chat-id") === user_id) {
+            conv_list[i].click();
+            return true;
+        } else if (!is_group && conv_list[i].getAttribute("data-user-id") === user_id) {
+            conv_list[i].click();
+            return true;
+        }
+    }
+    return false;
+}
+
+function add_chat_in_sidebar(user, chat_list, user_name, need_user_status, is_group = false, group_id = null) {
     let convs = document.querySelector(chat_list);
     let conv_list = convs.children;
-    let user_id;
-    if (!is_group) {
-        user_id = user.getAttribute("data-user-id");
-    } else {
-        user_id = user.getAttribute("data-group-id");
-    }
+
     let user_status = 0;
     if (need_user_status) {
         user_status = user.querySelector('.status').classList[4].split('-')[1];
     }
     let user_conv = document.createElement('div');
+    user_conv.setAttribute("data-chat-id", user.getAttribute("data-chat-id"));
     user_conv.classList = 'flex items-center space-x-3 p-2 hover:bg-gray-100 cursor-pointer border-l-4 border-transparent';
     user_conv.innerHTML = `
                     <div class="prof h-[18px] w-[18px] rounded-full bg-white border border-primary flex items-center justify-center">
@@ -213,30 +287,16 @@ function add_chat_in_sidebar(user, chat_list, user_name, need_user_status, is_gr
                     ${need_user_status ? `<div class="status w-[8px] h-[8px] ml-2 rounded-full bg-${user_status == 0 ? "red" : "green"}-600"></div>` : ""}
 
                 `;
-    if (!is_group) {
-        user_conv.setAttribute("data-user-id", user_id);
-    } else {
-        user_conv.setAttribute("data-group-id", user_id);
-    }
+
     user_conv.addEventListener('click', function () {
         make_sidebar_active(user_conv);
         add_chat(user_conv, need_user_status, is_group);
     });
-    for (let i = 0; i < conv_list.length; i++) {
-        if (is_group && conv_list[i].getAttribute("data-group-id") == user_id) {
-            conv_list[i].click();
-            return true;
-        }
-        else if (!is_group && conv_list[i].getAttribute("data-user-id") == user_id) {
-            conv_list[i].click();
-            return true;
-        }
-    }
     convs.insertBefore(user_conv, conv_list[0]);
     console.log(user_conv);
     user_conv.click();
 
-    return false;
+
 
 }
 
@@ -245,7 +305,7 @@ async function openChat(userDiv) {
     const userId = userDiv.getAttribute("data-user-id");
     console.log("Opening chat with user ID:", userId);
 
-    let isAlreadyPresent = add_chat_in_sidebar(userDiv, '.conv-item', userDiv.querySelector('.font-medium').innerText, true);
+    if (isAlreadyPresent(document.querySelector('.conv-item').children, false, userId)) return;
 
     // Create a new chat with the user
 
@@ -270,9 +330,11 @@ async function openChat(userDiv) {
 
     console.log("Chat created:", chat);
 
+    userDiv.setAttribute("data-chat-id", chat.payload);
 
 
 
+    add_chat_in_sidebar(userDiv, '.conv-item', userDiv.querySelector('.font-medium').innerText, true);
     // Add your code to open a chat with the user
 }
 
@@ -327,7 +389,7 @@ async function fetch_groups(user_id) {
                     </div>
                     <span class="font-medium">${chat[1]}</span>
                 `;
-        chat_div.setAttribute("data-group-id", chat[0]);
+        chat_div.setAttribute("data-chat-id", chat[0]);
         chat_div.addEventListener('click', function () {
             make_sidebar_active(chat_div);
             add_chat(chat_div, need_user_status = false, is_group = true);
@@ -450,7 +512,12 @@ async function createGroup() {
     const group = await response.json();
     console.log("Group created:", group);
 
-    add_chat_in_sidebar(selectedUsers.children[1], '.group-item', groupName, need_user_status = false, is_group = true);
+    let groupDatadiv = document.createElement('div');
+    groupDatadiv.setAttribute("data-chat-id", group.payload);
+
+
+
+    add_chat_in_sidebar(groupDatadiv, '.group-item', groupName, need_user_status = false, is_group = true);
 
     // Add your code to open the group chat
     closeGroupModal();

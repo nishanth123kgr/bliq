@@ -27,7 +27,7 @@ public class CreateMessage {
                 return new UserResponse(result[0], "error");
             }
 
-            return new UserResponse("Message sent successfully", "success");
+            return new UserResponse("Message sent successfully", "success", result[0]);
 
         } catch (Exception e) {
             return new UserResponse("Error sending message", "error");
