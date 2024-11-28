@@ -26,14 +26,14 @@ public class GetNotificationsForUser {
 
             if (notifications[1].equals("error")) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(notifications[0])
+                        .entity(new UserResponse(notifications[0], "error"))
                         .build();
             }
 
             return Response.ok(notifications[0]).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Internal server error")
+                    .entity(new UserResponse(e.getMessage(), "error"))
                     .build();
         }
     }

@@ -1,5 +1,6 @@
 package com.bliq.api.adminActionResource;
 
+import com.bliq.api.UserResponse;
 import com.bliq.services.AdminActionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -30,11 +31,11 @@ public class DemoteAsParticipant {
 
             if (result[1].equals("error")) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(result[0])
+                        .entity(new UserResponse(result[0], "error"))
                         .build();
             }
 
-            return Response.ok(result[0]).build();
+            return Response.ok(new UserResponse(result[0], "success")).build();
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -29,6 +29,7 @@ public class AdminActionService {
                 return new String[]{"User is not an admin", "error"};
             }
             Participants participant = participantService.getParticipant(chat_id, user_id);
+            em.getTransaction().begin();
             participant.setAdmin(true);
             em.getTransaction().commit();
 
@@ -64,7 +65,7 @@ public class AdminActionService {
             ChatActionService chatActionService = new ChatActionService(em);
             chatActionService.createAction("2", chat_id, user_id, admin_id);
 
-            return new String[]{"User demoted as admin", "success"};
+            return new String[]{"User demoted as participant", "success"};
         }
         catch (Exception e) {
             e.printStackTrace();

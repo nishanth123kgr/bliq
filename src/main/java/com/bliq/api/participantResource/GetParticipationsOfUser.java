@@ -1,5 +1,6 @@
 package com.bliq.api.participantResource;
 
+import com.bliq.api.UserResponse;
 import com.bliq.services.ParticipantService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -30,7 +31,7 @@ public class GetParticipationsOfUser {
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Internal server error")
+                    .entity(new UserResponse(e.getMessage(), "error"))
                     .build();
         }
     }
