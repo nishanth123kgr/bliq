@@ -200,10 +200,11 @@
                             <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Group Name</label>
                             <div class="flex items-center gap-1 mb-2">
                                 <input type="radio" name="privacy" id="public" value="public" checked
-                                    class="mr-1 cursor-pointer">
-                                <label for="name" class="block text-sm font-medium text-gray-900 mr-1">Public</label>
-                                <input type="radio" name="privacy" id="private" value="private" class="mr-1 cursor-pointer">
-                                <label for="name" class="block text-sm font-medium text-gray-900">Private</label>
+                                    class="mr-1 cursor-pointer text-primary bg-gray-100 border-gray-300 focus:ring-primary">
+                                <label for="public" class="block text-sm font-medium text-gray-900 mr-1 cursor-pointer">Public</label>
+                                <input type="radio" name="privacy" id="private" value="private" 
+                                class="mr-1 cursor-pointer text-primary bg-gray-100 border-gray-300 focus:ring-primary">
+                                <label for="private" class="block text-sm font-medium text-gray-900 cursor-pointer">Private</label>
                             </div>
                         </div>
                         <input type="text" name="name" id="group-name"

@@ -429,11 +429,11 @@ async function createGroup() {
 
     const params = new URLSearchParams();
     let user_id = document.body.getAttribute("data-user-id");
-    groupMembers.push(user_id);
     params.append("user_id", user_id);
     params.append("members", groupMembers.join(","));
     params.append("group_name", groupName);
-    params.append("is_private", 1);
+    const checkedValue = document.querySelector('input[name="privacy"]:checked')?.value;
+    params.append("is_private", checkedValue == "private" ? true : false);
 
     console.log("Creating group with members:", groupMembers);
 

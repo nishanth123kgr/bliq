@@ -35,6 +35,20 @@ public class ParticipantService {
         }
     }
 
+    public Participants getParticipant(String chat_id, String user_id) {
+        try {
+            // Create a query to get a participant in a chat
+            String jpql = "SELECT p FROM Participants p WHERE p.chatId = :chatId AND p.userId = :userId";
+            TypedQuery<Participants> query = em.createQuery(jpql, Participants.class);
+            query.setParameter("chatId", Long.parseLong(chat_id));
+            query.setParameter("userId", Long.parseLong(user_id));
+            return query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private boolean executeParticipantQuery(String chat_id, String user_id, String jpql) {
         TypedQuery<Participants> query = em.createQuery(jpql, Participants.class);
         query.setParameter("chatId", Long.parseLong(chat_id));

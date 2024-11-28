@@ -24,6 +24,8 @@ public class CreateGroup {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
         EntityManager em = emf.createEntityManager();
 
+        System.out.println(is_private);
+
         ChatService chatService = new ChatService(em);
 
         String[] group = chatService.createGroup(user_id, group_name, is_private);
