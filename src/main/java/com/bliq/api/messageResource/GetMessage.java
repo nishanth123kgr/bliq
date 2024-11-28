@@ -1,5 +1,6 @@
 package com.bliq.api.messageResource;
 
+import com.bliq.api.UserResponse;
 import com.bliq.services.MessageService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -24,14 +25,14 @@ public class GetMessage {
 
             if (messages[1].equals("error")) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(messages[0])
+                        .entity(new UserResponse(messages[0], "error"))
                         .build();
             }
 
             return Response.ok(messages[0]).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Internal server error")
+                    .entity(new UserResponse(e.getMessage(), "error"))
                     .build();
         }
     }
