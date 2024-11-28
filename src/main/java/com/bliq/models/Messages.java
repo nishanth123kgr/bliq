@@ -55,14 +55,6 @@ public class Messages {
         this.sentAt = sentAt;
     }
 
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public void setRead(boolean read) {
-        isRead = read;
-    }
-
     public boolean isSent() {
         return isSent;
     }
@@ -80,9 +72,6 @@ public class Messages {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "sent_at", nullable = false)
     private Date sentAt;
-
-    @Column(name = "is_read", nullable = false)
-    private boolean isRead;
 
     @Column(name = "is_sent", nullable = false)
     private boolean isSent;

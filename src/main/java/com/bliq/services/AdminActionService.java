@@ -98,4 +98,27 @@ public class AdminActionService {
             return new String[]{"Error removing user from chat", "error"};
         }
     }
+
+    public String[] addParticipant(String chat_id, String user_id, String admin_id) {
+        try {
+
+            ParticipantService participantService = new ParticipantService(em);
+
+            if(participantService.isParticipant(chat_id, user_id)) {
+                return new String[]{"User is already a participant", "error"};
+            }
+
+
+            String[] participant = participantService.addParticipant(chat_id, user_id, admin_id, false);
+
+            if(participant[1].equals("error")) {
+                return participant;
+            }
+            // Return the chat_id and a success message
+            return new String[]{"Participant added successfully", "success"};
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new String[]{"Error adding participant", "error"};
+        }
+    }
 }

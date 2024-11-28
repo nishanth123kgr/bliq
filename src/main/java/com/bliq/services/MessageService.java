@@ -155,4 +155,22 @@ public class MessageService {
             return new String[]{"Error getting message", "error"};
         }
     }
+
+    public boolean messageExists(String messageId) {
+        try {
+            String jpql = """
+                    SELECT m.id
+                    FROM Messages m
+                    WHERE m.id = :messageId""";
+            TypedQuery<Object> query = em.createQuery(jpql, Object.class);
+            query.setParameter("messageId", Long.parseLong(messageId));
+            List<Object> results = query.getResultList();
+
+            return !results.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return false if an exception occurs
+            return false;
+        }
+    }
 }

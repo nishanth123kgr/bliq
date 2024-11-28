@@ -2,6 +2,7 @@ package com.bliq.services;
 
 import com.bliq.models.NotificationRecipients;
 import com.bliq.models.Participants;
+import com.bliq.models.ReadList;
 import jakarta.persistence.EntityManager;
 
 import com.bliq.models.Notifications;
@@ -96,6 +97,8 @@ public class NotificationService {
             query.setParameter("user_id", Long.parseLong(user_id));
             List<Notifications> notifications = query.getResultList();
 
+            ReadListService readListService = new ReadListService(em);
+
             JSONArray jsonNotifications = new JSONArray();
 
             for (Notifications notification : notifications) {
@@ -105,6 +108,16 @@ public class NotificationService {
                 jsonNotification.put("msg_id", notification.getMsgId());
                 jsonNotification.put("type", notification.getType());
                 jsonNotifications.put(jsonNotification);
+
+                if(notification.getType() == 0){
+                    try {
+                        readListService.addReadStatus(String.valueOf(notification.getMsgId()), user_id);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                        return new String[]{"Error adding read status ", "error"};
+                    }
+                }
             }
 
             System.out.println("Notifications: " + jsonNotifications);
