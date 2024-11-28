@@ -126,4 +126,33 @@ public class MessageService {
             return new String[]{"Error getting messages", "error"};
         }
     }
+
+    public String[] getMessage(String message_id) {
+        try {
+            // Create a query to get a message by its id
+            String jpql = """
+                    SELECT m.id, m.senderId, m.content, m.sentAt
+                    FROM Messages m
+                    WHERE m.id = :messageId""";
+            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
+            query.setParameter("messageId", Long.parseLong(message_id));
+            List<Object[]> results = query.getResultList();
+
+            // Create a JSON object to store the message
+            JSONObject message = new JSONObject();
+            for (Object[] result : results) {
+                message.put("message_id", result[0]);
+                message.put("sender_id", result[1]);
+                message.put("content", result[2]);
+                message.put("created_at", result[3]);
+            }
+
+            // Return the message
+            return new String[]{message.toString(), "success"};
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return an error message if an exception occurs
+            return new String[]{"Error getting message", "error"};
+        }
+    }
 }

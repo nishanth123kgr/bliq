@@ -56,7 +56,7 @@ public class AdminActionService {
             if(!participantService.isUserAdmin(chat_id, admin_id)) {
                 return new String[]{"User is not an admin", "error"};
             }
-            Participants participant = em.find(Participants.class, Long.parseLong(user_id));
+            Participants participant = participantService.getParticipant(chat_id, user_id);
             em.getTransaction().begin();
             participant.setAdmin(false);
             em.getTransaction().commit();
@@ -82,7 +82,7 @@ public class AdminActionService {
             if(!participantService.isUserAdmin(chat_id, admin_id)) {
                 return new String[]{"User is not an admin", "error"};
             }
-            Participants participant = em.find(Participants.class, Long.parseLong(user_id));
+            Participants participant = participantService.getParticipant(chat_id, user_id);
             em.getTransaction().begin();
             em.remove(participant);
             em.getTransaction().commit();
