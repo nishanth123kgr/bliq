@@ -14,10 +14,21 @@ public class JoinRequestService {
         this.em = em;
     }
 
+    public boolean requestExists(String user_id, String chat_id) {
+        return !em.createQuery("SELECT j FROM JoinRequests j WHERE j.userId = :userId AND j.chatId = :chatId", JoinRequests.class)
+                .setParameter("userId", Long.parseLong(user_id))
+                .setParameter("chatId", Long.parseLong(chat_id))
+                .getResultList().isEmpty();
+    }
+
     public String[] createJoinRequest(String user_id, String chat_id) {
         try {
             EntityManagerFactory emf = jakarta.persistence.Persistence.createEntityManagerFactory("bliq");
             EntityManager em = emf.createEntityManager();
+
+            if(requestExists(user_id, chat_id)) {
+                return new String[]{"Join request already exists", "error"};
+            }
 
             ChatService chatService = new ChatService(em);
 
