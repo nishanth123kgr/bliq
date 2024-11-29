@@ -171,5 +171,14 @@ public class UserService {
             return false;
         }
     }
+
+    public Users getUser(String userId) {
+        try {
+            return em.find(Users.class, Long.parseLong(userId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
 

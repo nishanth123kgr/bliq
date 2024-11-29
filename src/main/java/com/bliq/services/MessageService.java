@@ -5,7 +5,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import com.bliq.webSocket.Socket;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MessageService {
@@ -55,6 +57,19 @@ public class MessageService {
             try {
                 NotificationService notificationService = new NotificationService(em);
                 notificationService.createNotification(String.valueOf(msg.getId()), "0", user_id);
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("message_id", msg.getId());
+                jsonObject.put("chat_id", chat_id);
+                jsonObject.put("sender_id", user_id);
+                jsonObject.put("content", message);
+                jsonObject.put("created_at", new SimpleDateFormat("hh:mm a yyyy-MM-dd").format(msg.getSentAt()));
+                jsonObject.put("sender_name", new UserService(em).getUser(user_id).getName());
+                jsonObject.put("is_group", chatService.isGroup(chat_id));
+                jsonObject.put("type", "message");
+
+                Socket.broadcast(chat_id, jsonObject.toString());
+
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -99,8 +114,9 @@ public class MessageService {
         try {
             // Create a query to get all messages in a chat
             String jpql = """
-                    SELECT m.id, m.senderId, m.content, m.sentAt
+                    SELECT m.id, m.senderId, m.content, m.sentAt, u.name
                     FROM Messages m
+                    join Users u on m.senderId = u.id
                     WHERE m.chatId = :chatId
                     ORDER BY m.sentAt ASC""";
             TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
@@ -115,6 +131,7 @@ public class MessageService {
                 message.put("sender_id", result[1]);
                 message.put("content", result[2]);
                 message.put("created_at", result[3]);
+                message.put("sender_name", result[4]);
                 messages.put(message);
             }
 

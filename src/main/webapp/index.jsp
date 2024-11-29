@@ -19,6 +19,7 @@
                         secondary: '#378ce7',
                         tertiary: '#D3D9FF',
                         dark_primary: '#3F57FF',
+                        primary_light: '#5468ff1a'
                     },
                     fontFamily: {
                         montserrat: ['Montserrat', 'sans-serif'],
@@ -281,6 +282,15 @@
 
         updateStatus()
 
+    </script>
+
+    <script>
+        window.addEventListener("beforeunload", (event) => {
+            event.returnValue = "Are you sure you want to leave?";
+            urlParams.set("status", "0");
+            updateStatus();
+
+        });
     </script>
 
     <script src="js/index_user_search.js"></script>

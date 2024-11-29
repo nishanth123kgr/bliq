@@ -96,14 +96,19 @@ async function add_chat(user, need_user_status = true, is_group = false) {
 
     chat.classList = 'flex-child overflow-hidden flex flex-col justify-between border rounded-lg h-full sm:w-full md:w-1/3 lg:w-1/4 ';
 
-    let IncomingMessageTemplate = (message, sentTime) => {
+    let IncomingMessageTemplate = (message, sentTime, sender) => {
         return `<div class="flex items-start gap-2.5 mb-2">
                             <div
                                 class="prof h-[30px] w-[30px] border rounded-full bg-white flex items-center justify-center">
                                 <img src="assets/logo/logo-light-white.png" alt="logo" class="h-[15px] w-[15px]">
                             </div>
+                            
                             <div
-                                class="flex flex-col w-full incoming border max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
+                                class="flex flex-col w-full incoming border max-w-[320px] leading-1.5 px-4 py-2 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
+                                ${is_group ?
+                                    `<div class="flex justify-end text-primary mb-1">
+                                        <span class="text-xs  self-end">${sender}</span>
+                                    </div>` : "" }
                                 <p class="text-sm font-normal text-gray-900">${message}</p>
                                 <div class="flex self-end text-gray-500 mt-1">
                                     <span class="text-xs  self-end">${sentTime}</span>
@@ -129,23 +134,7 @@ async function add_chat(user, need_user_status = true, is_group = false) {
                             </div>
                         </div>`};
 
-    let messages_html = "";
 
-    let messages = await getChat(chat_id);
-
-    let user_id = document.body.getAttribute("data-user-id");
-
-    console.log(messages);
-
-    for (const message of messages) {
-        let message_data = await getMessage(message.message_id);
-
-        if (message.sender_id == user_id) {
-            messages_html += OutgoingMessageTemplate(message_data.content, convertTime(message.created_at));
-        } else {
-            messages_html += IncomingMessageTemplate(message_data.content, convertTime(message.created_at));
-        }
-    }
 
 
 
@@ -170,7 +159,8 @@ async function add_chat(user, need_user_status = true, is_group = false) {
 
                     </div>
                     <div class="chat-msgs flex-1 overflow-y-auto p-2">
-                        <!-- Incoming Message -->
+
+                    <!--
                         <div class="flex items-start gap-2.5 mb-2">
                             <div
                                 class="prof h-[30px] w-[30px] border rounded-full bg-white flex items-center justify-center">
@@ -186,7 +176,6 @@ async function add_chat(user, need_user_status = true, is_group = false) {
                             </div>
                         </div>
 
-                        <!-- Outgoing Message -->
                         <div class="flex items-start gap-2.5 flex-row-reverse mb-2">
                             <div
                                 class="prof h-[30px] w-[30px] border rounded-full bg-white flex items-center justify-center">
@@ -202,8 +191,9 @@ async function add_chat(user, need_user_status = true, is_group = false) {
                                 </div>
                             </div>
                         </div>
+                    -->
 
-                        ${messages_html}
+                        
 
                         <!-- Add more messages as needed -->
                     </div>
@@ -220,7 +210,6 @@ async function add_chat(user, need_user_status = true, is_group = false) {
 
     let chat_msg = chat.querySelector('.chat-msgs');
 
-    chat_msg.scrollTop = chat_msg.scrollHeight;
 
     chat.querySelector('.message-send-btn').addEventListener('click', (e) => { sendMessage(e, chat); });
 
@@ -232,7 +221,30 @@ async function add_chat(user, need_user_status = true, is_group = false) {
 
     chatContainer.insertBefore(chat, chatContainer.firstChild);
     make_chat_active(chat);
-    
+
+    let messages_html = "";
+
+    let messages = await getChat(chat_id);
+
+    let user_id = document.body.getAttribute("data-user-id");
+
+    console.log(messages);
+
+    for (const message of messages) {
+        // let message_data = await getMessage(message.message_id);
+
+        if (message.sender_id == user_id) {
+            messages_html += OutgoingMessageTemplate(message.content, convertTime(message.created_at));
+        } else {
+            messages_html += IncomingMessageTemplate(message.content, convertTime(message.created_at), message.sender_name);
+        }
+    }
+
+    chat_msg.innerHTML = messages_html;
+
+    chat_msg.scrollTop = chat_msg.scrollHeight;
+
+
 
     chat.addEventListener('click', function () {
         make_chat_active(chat);
@@ -268,6 +280,35 @@ function isAlreadyPresent(conv_list, is_group, user_id) {
     return false;
 }
 
+let chat_sockets = {};
+
+function addSocket(chatId) {
+    let socket = new WebSocket(`ws://localhost:8080/group/${chatId}/`);
+
+    socket.onopen = () => {
+        console.log("Connected to chat group: " + chatId);
+        socket.send("Hello Group " + chatId);
+    };
+
+    socket.onmessage = (event) => {
+
+        let message = JSON.parse(event.data);
+        
+        addIncomingMessage(chatId, message);
+    };
+
+    socket.onclose = () => {
+        console.log("Disconnected from chat group: " + chatId);
+    };
+
+    socket.onerror = (error) => {
+        console.error("WebSocket error: ", error);
+    };
+
+    chat_sockets[chatId] = socket;
+}
+
+
 function add_chat_in_sidebar(user, chat_list, user_name, need_user_status, is_group = false, group_id = null) {
     let convs = document.querySelector(chat_list);
     let conv_list = convs.children;
@@ -277,7 +318,12 @@ function add_chat_in_sidebar(user, chat_list, user_name, need_user_status, is_gr
         user_status = user.querySelector('.status').classList[4].split('-')[1];
     }
     let user_conv = document.createElement('div');
-    user_conv.setAttribute("data-chat-id", user.getAttribute("data-chat-id"));
+    let chatId = user.getAttribute("data-chat-id");
+    user_conv.setAttribute("data-chat-id", chatId);    
+
+    addSocket(chatId);
+
+
     user_conv.classList = 'flex items-center space-x-3 p-2 hover:bg-gray-100 cursor-pointer border-l-4 border-transparent';
     user_conv.innerHTML = `
                     <div class="prof h-[18px] w-[18px] rounded-full bg-white border border-primary flex items-center justify-center">
@@ -364,6 +410,7 @@ async function fetch_chats(user_id) {
             make_sidebar_active(chat_div);
             add_chat(chat_div);
         });
+        addSocket(chat[1]);
         chatContainer.appendChild(chat_div);
     });
 }
@@ -394,6 +441,7 @@ async function fetch_groups(user_id) {
             make_sidebar_active(chat_div);
             add_chat(chat_div, need_user_status = false, is_group = true);
         });
+        addSocket(chat[0]);
         chatContainer.appendChild(chat_div);
     });
 }
