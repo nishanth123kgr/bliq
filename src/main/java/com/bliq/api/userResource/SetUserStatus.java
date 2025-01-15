@@ -2,10 +2,14 @@ package com.bliq.api.userResource;
 
 import com.bliq.api.UserResponse;
 import com.bliq.services.UserService;
+import com.bliq.webSocket.Socket;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.ws.rs.*;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 @Path("/set-user-status")
 public class SetUserStatus {
@@ -26,6 +30,14 @@ public class SetUserStatus {
                 if(updated[1].equals("error")){
                     return new UserResponse(updated[0], "error");
                 }
+
+                JsonObject message = Json.createObjectBuilder()
+                        .add("type", "status")
+                        .add("userId", user_id)
+                        .add("status", status)
+                        .build();
+
+                Socket.broadcastToAll(message.toString());
 
                 return new UserResponse("Status updated successfully", "success", status);
             }

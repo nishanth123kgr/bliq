@@ -55,4 +55,16 @@ public class Socket {
                     }
                 });
     }
+
+    public static void broadcastToAll(String message) {
+        chatRooms.values().forEach(sessions -> {
+            sessions.forEach(session -> {
+                try {
+                    session.getBasicRemote().sendText(message);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
 }

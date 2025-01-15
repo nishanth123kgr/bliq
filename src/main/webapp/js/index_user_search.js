@@ -283,7 +283,10 @@ function isAlreadyPresent(conv_list, is_group, user_id) {
 let chat_sockets = {};
 
 function addSocket(chatId) {
-    let socket = new WebSocket(`ws://localhost:8080/group/${chatId}/`);
+
+    let protocol = window.location.protocol == "https:" ? "wss" : "ws";
+
+    let socket = new WebSocket(`${protocol}://${window.location.host}/group/${chatId}/`);
 
     socket.onopen = () => {
         console.log("Connected to chat group: " + chatId);
@@ -294,7 +297,14 @@ function addSocket(chatId) {
 
         let message = JSON.parse(event.data);
         
-        addIncomingMessage(chatId, message);
+        if(message.type == "message")
+        {
+            addIncomingMessage(chatId, message);
+        } else if(message.type == "status")
+        {
+            let chat = document.querySelector(`[data-chat-id="${chatId}"]`);
+            chat.querySelector('.status').classList = `status w-[8px] h-[8px] ml-2 rounded-full bg-${message.status == 0 ? "red" : "green"}-600`;
+        }
     };
 
     socket.onclose = () => {
@@ -354,9 +364,6 @@ async function openChat(userDiv) {
     if (isAlreadyPresent(document.querySelector('.conv-item').children, false, userId)) return;
 
     // Create a new chat with the user
-
-    if (isAlreadyPresent) return;
-
     let params = new URLSearchParams();
     params.append('user_id', document.body.getAttribute("data-user-id"));
     params.append('receiver_id', userId);
@@ -376,7 +383,7 @@ async function openChat(userDiv) {
 
     console.log("Chat created:", chat);
 
-    userDiv.setAttribute("data-chat-id", chat.payload);
+    userDiv.setAttribute("data-chat-id", chat.payLoadList[0]);
 
 
 
