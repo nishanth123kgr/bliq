@@ -12,7 +12,11 @@ A Java web application built with Jakarta EE, Jersey REST APIs, and WebSocket su
 
 ## Free Deployment Options
 
-Since Railway trial has expired, here are the best free alternatives:
+### ✅ **FIXED**: Docker Build Issues
+The Dockerfile has been updated to use stable, widely-available images:
+- Single-stage build for reliability
+- Uses `tomcat:10.1-openjdk17` base image
+- Installs Maven inside container (no dependency on Maven Docker images)
 
 ### 1. Render (Recommended) ⭐
 
