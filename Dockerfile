@@ -1,5 +1,5 @@
 # Use official Maven image to build the application
-FROM maven:3.9.5-openjdk-17-slim AS build
+FROM maven:3.9-openjdk-17 AS build
 
 # Set working directory
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Use Tomcat runtime
-FROM tomcat:10.1-jdk17-openjdk-slim
+FROM tomcat:10.1-jdk17
 
 # Remove default webapps
 RUN rm -rf /usr/local/tomcat/webapps/*
