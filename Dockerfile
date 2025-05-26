@@ -1,10 +1,14 @@
-# Use Tomcat with JDK for both build and runtime
-FROM tomcat:10.1-openjdk17
+# Use official Tomcat with JDK (most stable available tag)
+FROM tomcat:10
 
-# Install Maven
+# Install Maven and Java 17
 RUN apt-get update && \
-    apt-get install -y maven && \
+    apt-get install -y maven openjdk-17-jdk && \
     rm -rf /var/lib/apt/lists/*
+
+# Set Java 17 as default
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Remove default webapps
 RUN rm -rf /usr/local/tomcat/webapps/*
