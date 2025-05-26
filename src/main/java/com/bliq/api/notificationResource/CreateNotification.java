@@ -18,7 +18,7 @@ public class CreateNotification {
             @FormParam("user_id") String user_id
     ) {
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             NotificationService notificationService = new NotificationService(em);

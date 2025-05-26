@@ -61,7 +61,7 @@ public class ParticipantService {
         try {
 
             // Create an EntityManagerFactory and EntityManager
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             // Create a new Participant object

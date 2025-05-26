@@ -21,7 +21,7 @@ public class GetGroupsOfUser {
             // Create an EntityManagerFactory and EntityManager
             System.out.println("user_id: " + user_id);
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
             ChatService chatService = new ChatService(em);
 

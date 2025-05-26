@@ -18,7 +18,7 @@ public class DemoteAsParticipant {
             @FormParam("chat_id") String chat_id
     ) {
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             System.out.println("user_id: " + user_id);

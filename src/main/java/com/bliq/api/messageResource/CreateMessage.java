@@ -17,7 +17,7 @@ public class CreateMessage {
             @FormParam("message") String message
     ) {
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
             MessageService messageService = new MessageService(em);
 

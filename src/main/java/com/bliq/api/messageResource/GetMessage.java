@@ -16,7 +16,7 @@ public class GetMessage {
             @QueryParam("message_id") String message_id
     ) {
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             MessageService messageService = new MessageService(em);

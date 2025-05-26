@@ -22,7 +22,7 @@ public class SignUp {
          @FormParam("password") String paswd
     ) {
         try{
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             /*Users user = new Users();

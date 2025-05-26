@@ -17,7 +17,7 @@ public class CreateChat {
         try {
             if (user_id != null && !user_id.isEmpty() && receiver_id != null && !receiver_id.isEmpty()) {
                 // Create an EntityManagerFactory and EntityManager
-                EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+                EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
                 EntityManager em = emf.createEntityManager();
                 ChatService chatService = new ChatService(em);
 

@@ -28,7 +28,7 @@ public class ReadListService {
 
     public String[] addReadStatus(String message_id, String user_id) {
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             if(isRead(message_id, user_id)) {

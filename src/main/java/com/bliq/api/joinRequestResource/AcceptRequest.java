@@ -20,7 +20,7 @@ public class AcceptRequest {
             System.out.println("Accepting request");
 
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             JoinRequestService joinRequestService = new JoinRequestService(em);

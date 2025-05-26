@@ -23,7 +23,7 @@ public class JoinRequestService {
 
     public String[] createJoinRequest(String user_id, String chat_id) {
         try {
-            EntityManagerFactory emf = jakarta.persistence.Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             if(requestExists(user_id, chat_id)) {

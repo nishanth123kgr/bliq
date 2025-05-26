@@ -25,7 +25,7 @@ public class Login {
             @FormParam("device") String device
     ) {
         try{
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
             UserService userService = new UserService(em);
             Utils utils = new Utils();

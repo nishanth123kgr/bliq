@@ -18,7 +18,7 @@ public class CreateJoinRequest {
             @FormParam("group_id") String group_id
     ) {
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             JoinRequestService joinRequestService = new JoinRequestService(em);

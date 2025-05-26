@@ -20,7 +20,7 @@ public class SetUserStatus {
             if (status != null && !status.isEmpty()) {
                 // Set the user's status
                 // This is where you would call a service to update the user's status in the database
-                EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+                EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
                 EntityManager em = emf.createEntityManager();
                 UserService userService = new UserService(em);
 

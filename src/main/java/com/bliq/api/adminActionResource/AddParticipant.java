@@ -18,7 +18,7 @@ public class AddParticipant {
             @FormParam("chat_id") String chat_id
     ) {
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             AdminActionService adminActionService = new AdminActionService(em);

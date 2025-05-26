@@ -21,7 +21,7 @@ public class CreateGroup {
             @FormParam("members") String group_members,
             @FormParam("is_private") boolean is_private) {
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+        EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
 
         System.out.println(is_private);

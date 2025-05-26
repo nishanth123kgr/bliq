@@ -58,7 +58,7 @@ public class IsAuthenticated implements Filter {
 
             // Check if the session token is valid
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+            EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
             EntityManager em = emf.createEntityManager();
 
             SessionService sessionService = new SessionService(em);

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: bliq-chat-app
+    env: docker
+    dockerfile: Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: jdbc:mysql://bhnnqi71g2wqrpwustfv-mysql.services.clever-cloud.com:3306/bhnnqi71g2wqrpwustfv
+      - key: DATABASE_USER
+        value: uqrllnmuff3ztkgj
+      - key: DATABASE_PASSWORD
+        value: 2ZFEDD7YO5EnzHRYN5QJ
+      - key: PORT
+        value: 8080
+    healthCheckPath: /
+    buildCommand: ""
+    startCommand: ""

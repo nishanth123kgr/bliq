@@ -18,7 +18,7 @@ public class SearchUser {
         try {
             if (query != null && !query.isEmpty()) {
                 // Create an EntityManagerFactory and EntityManager
-                EntityManagerFactory emf = Persistence.createEntityManagerFactory("bliq");
+                EntityManagerFactory emf = com.bliq.DatabaseConfig.getEntityManagerFactory();
                 EntityManager em = emf.createEntityManager();
                 UserService userService = new UserService(em);
 

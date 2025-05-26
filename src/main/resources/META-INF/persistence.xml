@@ -6,15 +6,13 @@
     <persistence-unit name="bliq">
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:5001/bliq"/>
-            <property name="jakarta.persistence.jdbc.user" value="root"/>
-            <property name="jakarta.persistence.jdbc.password" value=""/>
+            <property name="jakarta.persistence.jdbc.url" value="${DATABASE_URL:jdbc:mysql://bhnnqi71g2wqrpwustfv-mysql.services.clever-cloud.com:3306/bhnnqi71g2wqrpwustfv}"/>
+            <property name="jakarta.persistence.jdbc.user" value="${DATABASE_USER:uqrllnmuff3ztkgj}"/>
+            <property name="jakarta.persistence.jdbc.password" value="${DATABASE_PASSWORD:2ZFEDD7YO5EnzHRYN5QJ}"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.use_sql_comments" value="true"/>
-
-
-
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
 </persistence>

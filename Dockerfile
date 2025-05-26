@@ -1,15 +1,29 @@
-# Use the official Tomcat 10 base image
-FROM tomcat:10.1-jdk17
+# Use official Maven image to build the application
+FROM maven:3.9.5-openjdk-17-slim AS build
 
-# Set environment variables (optional)
-ENV CATALINA_HOME /usr/local/tomcat
-ENV PATH $CATALINA_HOME/bin:$PATH
+# Set working directory
+WORKDIR /app
 
-# Copy your Java .war file to the Tomcat webapps directory
-# Replace 'myapp.war' with your actual WAR file name
-COPY myapp.war $CATALINA_HOME/webapps/
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Expose Tomcat's default port
+# Copy source code
+COPY src ./src
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# Use Tomcat runtime
+FROM tomcat:10.1-jdk17-openjdk-slim
+
+# Remove default webapps
+RUN rm -rf /usr/local/tomcat/webapps/*
+
+# Copy the WAR file to Tomcat webapps directory
+COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
+
+# Expose port
 EXPOSE 8080
 
 # Start Tomcat
